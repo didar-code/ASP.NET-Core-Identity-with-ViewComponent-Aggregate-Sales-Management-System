@@ -1,0 +1,95 @@
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+
+@if (SignInManager.IsSignedIn(User))
+{
+    var email = User.Identity?.Name ?? "User";
+    var initial = !string.IsNullOrWhiteSpace(email) ? email.Substring(0, 1).ToUpper() : "U";
+
+    <div class="d-flex flex-column flex-lg-row align-items-lg-center gap-2 ms-lg-3">
+        <div class="user-pill navbar-user-pill">
+            <span class="user-pill__avatar">@initial</span>
+            <div class="small">
+                <strong class="d-block navbar-user-email">@email</strong>
+                <span class="navbar-user-status">Signed in</span>
+            </div>
+        </div>
+
+        <form asp-controller="Account" asp-action="Logout" method="post" class="m-0">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="btn btn-outline-danger nav-auth-btn rounded-pill px-3">
+                <i class="fa-solid fa-right-from-bracket me-2"></i>Logout
+            </button>
+        </form>
+    </div>
+}
+else
+{
+    <div class="d-flex flex-column flex-lg-row gap-2 ms-lg-3">
+        <a asp-controller="Account" asp-action="Login" class="btn btn-outline-primary nav-auth-btn rounded-pill px-3">
+            <i class="fa-solid fa-right-to-bracket me-2"></i>Login
+        </a>
+        <a asp-controller="Account" asp-action="Register" class="btn btn-primary nav-auth-btn rounded-pill px-3">
+            <i class="fa-solid fa-user-plus me-2"></i>Register
+        </a>
+    </div>
+}
+
+<style>
+    .navbar-user-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 14px;
+        border-radius: 999px;
+        background: linear-gradient(135deg, rgba(13,110,253,.08), rgba(111,66,193,.08));
+        border: 1px solid rgba(13, 110, 253, 0.10);
+    }
+
+        .navbar-user-pill .user-pill__avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: #fff;
+            background: linear-gradient(135deg, #0d6efd, #6f42c1);
+            box-shadow: 0 8px 18px rgba(13,110,253,.18);
+            flex-shrink: 0;
+        }
+
+    .navbar-user-email {
+        color: #0f172a;
+        font-size: 14px;
+        line-height: 1.2;
+    }
+
+    .navbar-user-status {
+        color: #64748b;
+        font-size: 12px;
+    }
+
+    .nav-auth-btn {
+        min-height: 42px;
+        font-weight: 600;
+        transition: all .25s ease;
+    }
+
+        .nav-auth-btn:hover {
+            transform: translateY(-1px);
+        }
+
+    @@media (max-width: 991.98px) {
+        .navbar-user-pill {
+            width: 100%;
+            justify-content: flex-start;
+        }
+
+        .nav-auth-btn {
+            width: 100%;
+        }
+    }
+</style>

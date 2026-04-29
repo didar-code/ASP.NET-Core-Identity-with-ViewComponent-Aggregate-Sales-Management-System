@@ -1,0 +1,209 @@
+@{
+    ViewData["Title"] = "Privacy";
+}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+<div class="content-panel slim-panel mx-auto privacy-wrapper" style="max-width: 1100px;">
+    <div class="privacy-hero mb-4">
+        <span class="section-chip mb-3">Privacy & Trust</span>
+
+        <h1 class="h2 mb-3 fw-bold">
+            <i class="fa-solid fa-shield-halved text-primary me-2"></i>
+            Your data, access control, and application safety.
+        </h1>
+
+        <p class="text-muted mb-0">
+            This ASP.NET Core MVC project uses authentication and authorization to protect sensitive sales records, administrative functions, and secure page access. User visibility and actions are controlled through signed-in status and assigned roles.
+        </p>
+    </div>
+
+    <div class="row g-4 mb-5">
+        <div class="col-md-4">
+            <div class="privacy-card privacy-card--blue h-100">
+                <div class="privacy-icon">
+                    <i class="fa-solid fa-lock"></i>
+                </div>
+                <h5>Protected Access</h5>
+                <p>
+                    Only authenticated users can open secured pages, while admin-only screens remain restricted through role authorization.
+                </p>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="privacy-card privacy-card--purple h-100">
+                <div class="privacy-icon">
+                    <i class="fa-solid fa-user-shield"></i>
+                </div>
+                <h5>Role Management</h5>
+                <p>
+                    Identity roles control user permissions, allowing Admin and User level access across the system.
+                </p>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="privacy-card privacy-card--green h-100">
+                <div class="privacy-icon">
+                    <i class="fa-solid fa-database"></i>
+                </div>
+                <h5>Data Awareness</h5>
+                <p>
+                    Sales records, payments, and property information remain protected under authorized account access.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="about-project-block">
+        <span class="section-chip mb-3">About This Project</span>
+
+        <h2 class="h3 mb-3 fw-bold">
+            <i class="fa-solid fa-diagram-project text-success me-2"></i>
+            Property Sales Management System
+        </h2>
+
+        <p class="text-muted mb-4">
+            This project is developed to manage property sales operations through secure authentication, role-based authorization, and organized sales record handling. It demonstrates practical implementation of ASP.NET Core MVC architecture with Identity and Entity Framework integration.
+        </p>
+
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="privacy-card privacy-card--orange h-100">
+                    <div class="privacy-icon">
+                        <i class="fa-solid fa-right-to-bracket"></i>
+                    </div>
+                    <h5>Authentication</h5>
+                    <p>
+                        Secure login, registration, logout, and Identity-based account protection.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="privacy-card privacy-card--pink h-100">
+                    <div class="privacy-icon">
+                        <i class="fa-solid fa-users-gear"></i>
+                    </div>
+                    <h5>Authorization</h5>
+                    <p>
+                        Admin-only pages and user-based navigation through role control.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="privacy-card privacy-card--dark h-100">
+                    <div class="privacy-icon">
+                        <i class="fa-solid fa-code"></i>
+                    </div>
+                    <h5>Technology Stack</h5>
+                    <p>
+                        ASP.NET Core MVC, Identity, Entity Framework Core, SQL Server, Bootstrap.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .privacy-wrapper {
+        padding: 2rem;
+        border-radius: 28px;
+    }
+
+    .privacy-hero {
+        padding-bottom: 1rem;
+    }
+
+    .about-project-block {
+        border-top: 1px solid #e5e7eb;
+        padding-top: 2rem;
+    }
+
+    .privacy-card {
+        position: relative;
+        border-radius: 22px;
+        padding: 24px;
+        background: #fff;
+        border: 1px solid #e9eef5;
+        box-shadow: 0 10px 28px rgba(15, 23, 42, 0.06);
+        transition: all .3s ease;
+        overflow: hidden;
+    }
+
+        .privacy-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 45px rgba(15, 23, 42, 0.12);
+        }
+
+        .privacy-card h5 {
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: #0f172a;
+        }
+
+        .privacy-card p {
+            margin-bottom: 0;
+            color: #475569;
+            line-height: 1.6;
+        }
+
+    .privacy-icon {
+        width: 56px;
+        height: 56px;
+        border-radius: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 16px;
+        font-size: 22px;
+        background: rgba(255,255,255,.7);
+        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+    }
+
+    .privacy-card--blue {
+        background: linear-gradient(135deg, #eef6ff, #ffffff);
+    }
+
+    .privacy-card--purple {
+        background: linear-gradient(135deg, #f5f0ff, #ffffff);
+    }
+
+    .privacy-card--green {
+        background: linear-gradient(135deg, #eefdf3, #ffffff);
+    }
+
+    .privacy-card--orange {
+        background: linear-gradient(135deg, #fff7eb, #ffffff);
+    }
+
+    .privacy-card--pink {
+        background: linear-gradient(135deg, #fff1f7, #ffffff);
+    }
+
+    .privacy-card--dark {
+        background: linear-gradient(135deg, #f3f6fa, #ffffff);
+    }
+
+    @@media (max-width: 767.98px) {
+        .privacy-wrapper {
+            padding: 1.25rem;
+            border-radius: 18px;
+        }
+
+        .privacy-card {
+            border-radius: 18px;
+            padding: 20px;
+        }
+
+        .privacy-icon {
+            width: 48px;
+            height: 48px;
+            font-size: 18px;
+            border-radius: 14px;
+        }
+    }
+</style>

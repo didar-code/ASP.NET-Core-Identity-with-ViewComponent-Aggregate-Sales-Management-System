@@ -1,0 +1,243 @@
+@model IEnumerable<Microsoft.AspNetCore.Identity.IdentityRole>
+
+@{
+    ViewData["Title"] = "Roles";
+}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+<div class="page-header-block content-panel mb-4 roles-header-card">
+    <div>
+        <span class="section-chip mb-3">Authorization</span>
+        <h1 class="h2 fw-bold mb-2">
+            <i class="fa-solid fa-user-lock text-primary me-2"></i>Roles & Permissions
+        </h1>
+        <p class="text-muted mb-0">
+            Organize authorization levels and keep your application access structure clean and scalable.
+        </p>
+    </div>
+
+    <div class="d-flex flex-wrap gap-2">
+        <a asp-controller="Admin" asp-action="Index" class="btn btn-outline-dark rounded-pill px-4">
+            <i class="fa-solid fa-users me-2"></i>User Directory
+        </a>
+        <a asp-controller="Home" asp-action="Index" class="btn btn-primary rounded-pill px-4">
+            <i class="fa-solid fa-house me-2"></i>Dashboard
+        </a>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-md-6">
+        <div class="summary-card gradient-blue">
+            <div class="summary-icon">
+                <i class="fa-solid fa-layer-group"></i>
+            </div>
+            <span>Total Roles</span>
+            <h3>@Model.Count()</h3>
+            <small>Defined authorization roles</small>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="summary-card gradient-purple">
+            <div class="summary-icon">
+                <i class="fa-solid fa-shield-halved"></i>
+            </div>
+            <span>Access Control</span>
+            <h3>Managed</h3>
+            <small>Role-based security structure</small>
+        </div>
+    </div>
+</div>
+
+<div class="content-panel roles-content-card">
+    <div class="panel-header mb-3">
+        <div>
+            <span class="section-chip">System roles</span>
+            <h3 class="h4 mt-2 mb-0">
+                <i class="fa-solid fa-key text-warning me-2"></i>Available roles
+            </h3>
+        </div>
+    </div>
+
+    @if (Model.Any())
+    {
+        <div class="row g-3">
+            @foreach (var role in Model)
+            {
+                <div class="col-md-6 col-xl-4">
+                    <div class="role-box">
+                        <div class="role-box-top">
+                            <div class="role-icon">
+                                <i class="fa-solid fa-user-shield"></i>
+                            </div>
+                            <span class="badge bg-primary-subtle text-primary-emphasis rounded-pill px-3 py-2">Active</span>
+                        </div>
+
+                        <div class="role-box-body">
+                            <h5 class="mb-2">@role.Name</h5>
+                            <div class="role-id-label">Role ID</div>
+                            <div class="role-id-text">@role.Id</div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="empty-state text-center py-5">
+            <i class="fa-solid fa-circle-exclamation fa-2x text-muted mb-3"></i>
+            <h5 class="mb-2">No roles found</h5>
+            <p class="text-muted mb-0">Create roles to start controlling authorization in the application.</p>
+        </div>
+    }
+</div>
+
+<style>
+    .roles-header-card,
+    .roles-content-card {
+        border-radius: 24px;
+        transition: all .3s ease;
+    }
+
+        .roles-header-card:hover,
+        .roles-content-card:hover {
+            box-shadow: 0 18px 40px rgba(15, 23, 42, .08);
+        }
+
+    .summary-card {
+        position: relative;
+        border-radius: 22px;
+        padding: 24px;
+        color: white;
+        overflow: hidden;
+        min-height: 150px;
+        box-shadow: 0 12px 30px rgba(0,0,0,.10);
+        transition: all .35s ease;
+    }
+
+        .summary-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 18px 40px rgba(0,0,0,.16);
+        }
+
+        .summary-card span {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            opacity: .95;
+        }
+
+        .summary-card h3 {
+            font-size: 2.1rem;
+            font-weight: 800;
+            margin: 12px 0 8px;
+        }
+
+        .summary-card small {
+            font-size: 13px;
+            opacity: .92;
+        }
+
+    .summary-icon {
+        position: absolute;
+        top: 18px;
+        right: 18px;
+        font-size: 28px;
+        opacity: .22;
+    }
+
+    .gradient-blue {
+        background: linear-gradient(135deg, #4facfe, #00f2fe);
+    }
+
+    .gradient-purple {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+    }
+
+    .role-box {
+        height: 100%;
+        background: linear-gradient(135deg, #ffffff, #f8fbff);
+        border: 1px solid #e5edf7;
+        border-radius: 22px;
+        padding: 18px;
+        box-shadow: 0 10px 24px rgba(15, 23, 42, .05);
+        transition: all .28s ease;
+    }
+
+        .role-box:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 16px 34px rgba(15, 23, 42, .10);
+            border-color: #cfe0ff;
+        }
+
+    .role-box-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 14px;
+    }
+
+    .role-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #0d6efd;
+        background: linear-gradient(135deg, rgba(13,110,253,.10), rgba(111,66,193,.08));
+        font-size: 18px;
+    }
+
+    .role-box-body h5 {
+        font-weight: 700;
+        color: #0f172a;
+        margin-bottom: 10px;
+    }
+
+    .role-id-label {
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: .03em;
+        text-transform: uppercase;
+        color: #64748b;
+        margin-bottom: 6px;
+    }
+
+    .role-id-text {
+        font-size: 13px;
+        line-height: 1.6;
+        color: #334155;
+        word-break: break-word;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        padding: 10px 12px;
+    }
+
+    @@media (max-width: 767.98px) {
+        .roles-header-card,
+        .roles-content-card,
+        .summary-card,
+        .role-box {
+            border-radius: 18px;
+        }
+
+        .summary-card {
+            min-height: 135px;
+            padding: 20px;
+        }
+
+            .summary-card h3 {
+                font-size: 1.75rem;
+            }
+
+        .role-id-text {
+            font-size: 12px;
+        }
+    }
+</style>

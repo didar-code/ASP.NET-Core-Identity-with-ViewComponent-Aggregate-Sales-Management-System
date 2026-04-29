@@ -1,0 +1,979 @@
+@model X.PagedList.IPagedList<SalesCoreProjectWithIdentityViewCom.Models.Sale>
+@using X.PagedList.Mvc.Core
+
+@{
+    ViewData["Title"] = "Sales";
+    var paymentMethods = ViewBag.PaymentMethods as IEnumerable<SalesCoreProjectWithIdentityViewCom.Models.PaymentMethod>;
+    var currentPageTotal = Model?.Sum(x => x.TotalPrice) ?? 0;
+    var currentPagePaid = Model?.Count(x => x.IsPaid) ?? 0;
+    var currentPageUnpaid = Model?.Count(x => !x.IsPaid) ?? 0;
+    var currentPageProperties = Model?.Sum(x => x.Properties != null ? x.Properties.Count : 0) ?? 0;
+}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+@Html.AntiForgeryToken()
+
+<div class="page-header-block content-panel mb-4 sales-header-card hero-gradient">
+    <div class="hero-content">
+        <span class="hero-chip mb-3"><i class="fa-solid fa-bolt me-2"></i>Sales Workspace</span>
+        <h1 class="display-6 fw-bold mb-2 text-white">
+            <i class="fa-solid fa-briefcase me-2"></i>Manage Sales
+        </h1>
+        <p class="text-white-50 mb-0">
+            Search, review, create, edit, delete, sort, and manage sales records from one colorful responsive dashboard.
+        </p>
+    </div>
+
+    <div class="d-flex flex-wrap gap-2 hero-actions">
+        @if (User.IsInRole("Admin"))
+        {
+            <button id="btnCreateSale" class="btn btn-light rounded-pill px-4 shadow-sm fw-semibold">
+                <i class="fa-solid fa-plus me-2 text-primary"></i>Add Sale
+            </button>
+        }
+        <button type="button" id="btnPrintSales" class="btn btn-outline-light rounded-pill px-4">
+            <i class="fa-solid fa-print me-2"></i>Print
+        </button>
+        <a asp-controller="Home" asp-action="Index" class="btn btn-dark rounded-pill px-4">
+            <i class="fa-solid fa-house me-2"></i>Dashboard
+        </a>
+    </div>
+</div>
+
+<div class="row g-3 mb-4 quick-stat-row">
+    <div class="col-6 col-lg-3"><div class="quick-stat stat-blue"><div class="stat-icon"><i class="fa-solid fa-layer-group"></i></div><div><span>Total Records</span><h4>@(Model?.TotalItemCount ?? 0)</h4></div></div></div>
+    <div class="col-6 col-lg-3"><div class="quick-stat stat-green"><div class="stat-icon"><i class="fa-solid fa-money-bill-trend-up"></i></div><div><span>This Page Amount</span><h4>@currentPageTotal.ToString("N0")</h4></div></div></div>
+    <div class="col-6 col-lg-3"><div class="quick-stat stat-purple"><div class="stat-icon"><i class="fa-solid fa-circle-check"></i></div><div><span>Paid / Unpaid</span><h4>@currentPagePaid / @currentPageUnpaid</h4></div></div></div>
+    <div class="col-6 col-lg-3"><div class="quick-stat stat-orange"><div class="stat-icon"><i class="fa-solid fa-building"></i></div><div><span>Properties</span><h4>@currentPageProperties</h4></div></div></div>
+</div>
+
+<div class="content-panel mb-4 analytics-panel">
+    <div class="panel-header mb-3">
+        <div>
+            <span class="section-chip">Analytics</span>
+            <h3 class="h4 mt-2 mb-0">
+                <i class="fa-solid fa-chart-line text-success me-2"></i>View Components
+            </h3>
+            <p class="text-muted mb-0">Quick performance snapshot of sales, revenue, payment, and property activity.</p>
+        </div>
+    </div>
+
+    <div class="component-body">
+        @await Component.InvokeAsync("SalesSummary")
+    </div>
+</div>
+
+<div class="content-panel mb-4 filter-panel">
+    <div class="panel-header mb-3">
+        <div>
+            <span class="section-chip">Filters</span>
+            <h3 class="h4 mt-2 mb-0">
+                <i class="fa-solid fa-filter text-info me-2"></i>Search and refine records
+            </h3>
+        </div>
+    </div>
+
+    <form asp-action="Index" method="get" class="row g-3" id="salesFilterForm">
+        <div class="col-md-3">
+            <label class="form-label fw-semibold">
+                <i class="fa-solid fa-magnifying-glass me-2 text-primary"></i>Search
+            </label>
+            <input type="text" name="search" value="@ViewBag.CurrentSearch" class="form-control rounded-4 live-search-input" placeholder="Client name or mobile" />
+        </div>
+
+        <div class="col-md-2">
+            <label class="form-label fw-semibold">
+                <i class="fa-solid fa-calendar-days me-2 text-danger"></i>From Date
+            </label>
+            <input type="date" name="fromDate" value="@ViewBag.FromDate" class="form-control rounded-4" />
+        </div>
+
+        <div class="col-md-3">
+            <label class="form-label fw-semibold">
+                <i class="fa-solid fa-credit-card me-2 text-success"></i>Payment Method
+            </label>
+            <select name="paymentTypeId" class="form-select rounded-4">
+                <option value="">All Methods</option>
+                @foreach (var p in paymentMethods ?? new List<SalesCoreProjectWithIdentityViewCom.Models.PaymentMethod>())
+                {
+                    <option value="@p.PaymentTypeId"
+                            selected="@(ViewBag.PaymentTypeId != null && (int)ViewBag.PaymentTypeId == p.PaymentTypeId)">
+                        @p.PaymentType
+                    </option>
+                }
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <label class="form-label fw-semibold">
+                <i class="fa-solid fa-circle-check me-2 text-warning"></i>Status
+            </label>
+            <select name="isPaid" class="form-select rounded-4">
+                <option value="">All Status</option>
+                <option value="true" selected="@(ViewBag.IsPaid == "true")">Paid</option>
+                <option value="false" selected="@(ViewBag.IsPaid == "false")">Unpaid</option>
+            </select>
+        </div>
+
+        <div class="col-md-2 d-flex align-items-end gap-2">
+            <button class="btn btn-primary w-100 rounded-pill shadow-sm">
+                <i class="fa-solid fa-magnifying-glass me-1"></i>Search
+            </button>
+            <a asp-action="Index" class="btn btn-outline-secondary w-100 rounded-pill">
+                <i class="fa-solid fa-rotate-left me-1"></i>Reset
+            </a>
+        </div>
+    </form>
+</div>
+
+<div id="salesRecords" class="content-panel sales-record-panel">
+    <div class="panel-header mb-3 records-toolbar">
+        <div>
+            <span class="section-chip">Records</span>
+            <h3 class="h4 mt-2 mb-0"><i class="fa-solid fa-table-list text-primary me-2"></i>Sales listing</h3>
+        </div>
+       
+        <div class="d-flex flex-wrap gap-2">
+            <button type="button" class="btn btn-outline-primary rounded-pill btn-sm" id="btnScrollTop"><i class="fa-solid fa-arrow-up me-1"></i>Top</button>
+            <button type="button" class="btn btn-outline-success rounded-pill btn-sm" id="btnExportCsv"><i class="fa-solid fa-file-csv me-1"></i>Export CSV</button>
+        </div>
+    </div>
+    <button id="btnCreateSale" class="btn btn-light rounded-pill px-4 shadow-sm fw-semibold">
+        <i class="fa-solid fa-plus me-4 text-primary"></i>Add Sale
+    </button>
+    @if (Model != null && Model.Any())
+    {
+        <div class="table-responsive">
+            <table class="table modern-table align-middle sales-table">
+                <thead>
+                    <tr>
+                        <th><i class="fa-solid fa-image me-2"></i>Image</th>
+                        <th>
+                            <a asp-action="Index"
+                               asp-route-sortOrder="@ViewBag.DateSort"
+                               asp-route-search="@ViewBag.CurrentSearch"
+                               asp-route-fromDate="@ViewBag.FromDate"
+                               asp-route-paymentTypeId="@ViewBag.PaymentTypeId"
+                               asp-route-isPaid="@ViewBag.IsPaid"
+                               asp-fragment="salesRecords">
+                                <i class="fa-solid fa-calendar-days me-2"></i>Date
+                                <i class="fa-solid @(ViewBag.CurrentSort == "date_asc" ? "fa-sort-up" : ViewBag.CurrentSort == "date_desc" ? "fa-sort-down" : "fa-sort") ms-1"></i>
+                            </a>
+                        </th>
+                        <th>
+                            <a asp-action="Index"
+                               asp-route-sortOrder="@ViewBag.PriceSort"
+                               asp-route-search="@ViewBag.CurrentSearch"
+                               asp-route-fromDate="@ViewBag.FromDate"
+                               asp-route-paymentTypeId="@ViewBag.PaymentTypeId"
+                               asp-route-isPaid="@ViewBag.IsPaid"
+                               asp-fragment="salesRecords">
+                                <i class="fa-solid fa-money-bill-wave me-2"></i>Price
+                                <i class="fa-solid @(ViewBag.CurrentSort == "price_asc" ? "fa-sort-up" : ViewBag.CurrentSort == "price_desc" ? "fa-sort-down" : "fa-sort") ms-1"></i>
+                            </a>
+                        </th>
+                        <th>
+                            <a asp-action="Index"
+                               asp-route-sortOrder="@ViewBag.ClientSort"
+                               asp-route-search="@ViewBag.CurrentSearch"
+                               asp-route-fromDate="@ViewBag.FromDate"
+                               asp-route-paymentTypeId="@ViewBag.PaymentTypeId"
+                               asp-route-isPaid="@ViewBag.IsPaid"
+                               asp-fragment="salesRecords">
+                                <i class="fa-solid fa-user me-2"></i>Client
+                                <i class="fa-solid @(ViewBag.CurrentSort == "client_asc" ? "fa-sort-up" : ViewBag.CurrentSort == "client_desc" ? "fa-sort-down" : "fa-sort") ms-1"></i>
+                            </a>
+                        </th>
+                        <th>
+                            <a asp-action="Index"
+                               asp-route-sortOrder="@ViewBag.MobileSort"
+                               asp-route-search="@ViewBag.CurrentSearch"
+                               asp-route-fromDate="@ViewBag.FromDate"
+                               asp-route-paymentTypeId="@ViewBag.PaymentTypeId"
+                               asp-route-isPaid="@ViewBag.IsPaid"
+                               asp-fragment="salesRecords">
+                                <i class="fa-solid fa-phone me-2"></i>Mobile
+                                <i class="fa-solid @(ViewBag.CurrentSort == "mobile_asc" ? "fa-sort-up" : ViewBag.CurrentSort == "mobile_desc" ? "fa-sort-down" : "fa-sort") ms-1"></i>
+                            </a>
+                        </th>
+                        <th>
+                            <a asp-action="Index"
+                               asp-route-sortOrder="@ViewBag.PaymentSort"
+                               asp-route-search="@ViewBag.CurrentSearch"
+                               asp-route-fromDate="@ViewBag.FromDate"
+                               asp-route-paymentTypeId="@ViewBag.PaymentTypeId"
+                               asp-route-isPaid="@ViewBag.IsPaid"
+                               asp-fragment="salesRecords">
+                                <i class="fa-solid fa-wallet me-2"></i>Payment
+                                <i class="fa-solid @(ViewBag.CurrentSort == "payment_asc" ? "fa-sort-up" : ViewBag.CurrentSort == "payment_desc" ? "fa-sort-down" : "fa-sort") ms-1"></i>
+                            </a>
+                        </th>
+                        <th>
+                            <a asp-action="Index"
+                               asp-route-sortOrder="@ViewBag.StatusSort"
+                               asp-route-search="@ViewBag.CurrentSearch"
+                               asp-route-fromDate="@ViewBag.FromDate"
+                               asp-route-paymentTypeId="@ViewBag.PaymentTypeId"
+                               asp-route-isPaid="@ViewBag.IsPaid"
+                               asp-fragment="salesRecords">
+                                <i class="fa-solid fa-circle-check me-2"></i>Status
+                                <i class="fa-solid @(ViewBag.CurrentSort == "status_asc" ? "fa-sort-up" : ViewBag.CurrentSort == "status_desc" ? "fa-sort-down" : "fa-sort") ms-1"></i>
+                            </a>
+                        </th>
+                        <th><i class="fa-solid fa-building me-2"></i>Properties</th>
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <th class="text-end"><i class="fa-solid fa-gear me-2"></i>Action</th>
+                        }
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var s in Model)
+                    {
+                        <tr class="sales-row">
+                            <td data-label="Image">
+                                <img src="@(Url.Content(s.ClientImage ?? "~/Images/noImg.jpg"))"
+                                     class="table-thumb"
+                                     alt="Client image" />
+                            </td>
+
+                            <td data-label="Date"><strong>@s.SaleDate.ToString("dd MMM yyyy")</strong></td>
+                            <td data-label="Price">
+                                <span class="price-pill">
+                                    <i class="fa-solid fa-dollar-sign me-1"></i>@s.TotalPrice
+                                </span>
+                            </td>
+                            <td data-label="Client"><strong>@s.ClientName</strong></td>
+                            <td data-label="Mobile">@s.MobileNo</td>
+
+                            <td data-label="Payment">
+                                <span class="badge bg-info-subtle text-dark px-3 py-2 rounded-pill payment-badge">
+                                    <i class="fa-solid fa-credit-card me-1"></i>@s.PaymentMethod?.PaymentType
+                                </span>
+                            </td>
+
+                            <td data-label="Status">
+                                @if (s.IsPaid)
+                                {
+                                    <span class="badge bg-success-subtle text-success-emphasis rounded-pill px-3 py-2">
+                                        <i class="fa-solid fa-check me-1"></i>Paid
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning-subtle text-warning-emphasis rounded-pill px-3 py-2">
+                                        <i class="fa-solid fa-clock me-1"></i>Unpaid
+                                    </span>
+                                }
+                            </td>
+
+                            <td data-label="Properties">
+                                @if (s.Properties != null && s.Properties.Any())
+                                {
+                                    <ul class="mb-0 ps-0 property-list">
+                                        @foreach (var p in s.Properties)
+                                        {
+                                            <li class="mb-1">
+                                                <span class="badge bg-light text-dark border px-3 py-2 rounded-pill">
+                                                    <i class="fa-solid fa-house me-1 text-primary"></i>@p.PropertyType - @p.Location
+                                                </span>
+                                            </li>
+                                        }
+                                    </ul>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">No property</span>
+                                }
+                            </td>
+
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <td class="text-end" data-label="Action">
+                                    <div class="d-flex justify-content-end flex-wrap gap-2">
+                                        <button class="btn btn-sm btn-primary rounded-pill px-3 edit-btn shadow-sm" data-id="@s.SalesId">
+                                            <i class="fa-solid fa-pen-to-square me-1"></i>Edit
+                                        </button>
+                                        <button class="btn btn-sm btn-danger rounded-pill px-3 delete-btn shadow-sm" data-id="@s.SalesId">
+                                            <i class="fa-solid fa-trash me-1"></i>Delete
+                                        </button>
+                                    </div>
+                                </td>
+                            }
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="mt-4 pager-wrap">
+            @Html.PagedListPager(Model, page =>
+            Url.Action("Index", new
+            {
+                page,
+                search = ViewBag.CurrentSearch,
+                fromDate = ViewBag.FromDate,
+                paymentTypeId = ViewBag.PaymentTypeId,
+                isPaid = ViewBag.IsPaid,
+                sortOrder = ViewBag.CurrentSort
+            }))
+    </div>
+        }
+    else
+    {
+        <div class="empty-state text-center py-5">
+            <i class="fa-solid fa-box-open fa-3x text-muted mb-3"></i>
+            <h5 class="mb-2">No sales found</h5>
+            <p class="text-muted mb-3">Try changing your filters or create a new sale record to get started.</p>
+            @if (User.IsInRole("Admin"))
+            {
+                <button id="btnCreateSaleEmpty" class="btn btn-primary rounded-pill px-4 shadow-sm">
+                    <i class="fa-solid fa-plus me-2"></i>Add Sale
+                </button>
+            }
+        </div>
+    }
+</div>
+
+<div class="loading-overlay" id="loadingOverlay"><div class="loading-card"><span class="spinner-border spinner-border-sm text-primary"></span><span>Processing...</span></div></div>
+<div class="sales-toast" id="salesToast"></div>
+<div id="modalContainer"></div>
+
+<style>
+    body {
+        background: linear-gradient(135deg, #f8fbff 0%, #eef6ff 45%, #fff7ed 100%);
+    }
+
+    .hero-gradient {
+        position: relative;
+        overflow: hidden;
+        background: radial-gradient(circle at top left, rgba(255,255,255,.28), transparent 32%), linear-gradient(135deg, #2563eb 0%, #7c3aed 48%, #f97316 100%);
+        color: #fff;
+        border: 0;
+        padding: 32px;
+    }
+
+        .hero-gradient::after {
+            content: "";
+            position: absolute;
+            width: 240px;
+            height: 240px;
+            right: -70px;
+            bottom: -90px;
+            border-radius: 50%;
+            background: rgba(255,255,255,.14);
+        }
+
+    .hero-content, .hero-actions {
+        position: relative;
+        z-index: 1;
+    }
+
+    .hero-chip {
+        display: inline-flex;
+        align-items: center;
+        padding: 8px 14px;
+        border-radius: 999px;
+        background: rgba(255,255,255,.18);
+        color: #fff;
+        font-weight: 700;
+        backdrop-filter: blur(8px);
+    }
+
+    .quick-stat {
+        display: flex;
+        gap: 14px;
+        align-items: center;
+        padding: 20px;
+        border-radius: 22px;
+        color: #fff;
+        min-height: 118px;
+        box-shadow: 0 14px 32px rgba(15,23,42,.12);
+        transition: all .25s ease;
+    }
+
+        .quick-stat:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 18px 42px rgba(15,23,42,.18);
+        }
+
+        .quick-stat span {
+            display: block;
+            font-size: 13px;
+            opacity: .86;
+            font-weight: 600;
+        }
+
+        .quick-stat h4 {
+            margin: 4px 0 0;
+            font-weight: 800;
+        }
+
+    .stat-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 16px;
+        display: grid;
+        place-items: center;
+        background: rgba(255,255,255,.22);
+        font-size: 20px;
+    }
+
+    .stat-blue {
+        background: linear-gradient(135deg, #2563eb, #06b6d4);
+    }
+
+    .stat-green {
+        background: linear-gradient(135deg, #16a34a, #22c55e);
+    }
+
+    .stat-purple {
+        background: linear-gradient(135deg, #7c3aed, #ec4899);
+    }
+
+    .stat-orange {
+        background: linear-gradient(135deg, #f97316, #facc15);
+    }
+
+    .records-toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+    }
+
+    .loading-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 2000;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        background: rgba(15,23,42,.38);
+        backdrop-filter: blur(3px);
+    }
+
+    .loading-card {
+        background: #fff;
+        padding: 18px 22px;
+        border-radius: 18px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: 700;
+        box-shadow: 0 20px 50px rgba(15,23,42,.24);
+    }
+
+    .sales-toast {
+        position: fixed;
+        right: 24px;
+        bottom: 24px;
+        z-index: 2200;
+        display: none;
+        max-width: 360px;
+        padding: 14px 18px;
+        border-radius: 16px;
+        color: #fff;
+        background: linear-gradient(135deg, #16a34a, #2563eb);
+        box-shadow: 0 18px 40px rgba(15,23,42,.22);
+        font-weight: 700;
+    }
+
+    .sales-header-card,
+    .analytics-panel,
+    .filter-panel,
+    .sales-record-panel {
+        border-radius: 24px;
+        transition: all .35s ease;
+    }
+
+        .sales-header-card:hover,
+        .analytics-panel:hover,
+        .filter-panel:hover,
+        .sales-record-panel:hover {
+            box-shadow: 0 18px 40px rgba(15, 23, 42, .08);
+        }
+
+    .sales-table thead th {
+        background: linear-gradient(90deg, #0d6efd, #0dcaf0);
+        color: #fff;
+        border: none;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .sales-table tbody tr {
+        transition: all .3s ease;
+    }
+
+        .sales-table tbody tr:hover {
+            background: linear-gradient(90deg, #f8fbff, #ffffff);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, .05);
+        }
+
+    .table-thumb {
+        width: 58px;
+        height: 58px;
+        object-fit: cover;
+        border-radius: 14px;
+        border: 2px solid #e9ecef;
+        transition: all .3s ease;
+        box-shadow: 0 6px 14px rgba(15, 23, 42, .08);
+    }
+
+        .table-thumb:hover {
+            transform: scale(1.08);
+        }
+
+    .price-pill {
+        display: inline-flex;
+        align-items: center;
+        padding: 8px 14px;
+        border-radius: 999px;
+        background: linear-gradient(135deg, #dcfce7, #d1fae5);
+        color: #166534;
+        font-weight: 600;
+    }
+
+    .payment-badge {
+        border: 1px solid rgba(13, 202, 240, .2);
+    }
+
+    .property-list {
+        list-style: none;
+    }
+
+    .btn {
+        transition: all .25s ease;
+    }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+    .form-control,
+    .form-select {
+        transition: all .25s ease;
+    }
+
+        .form-control:focus,
+        .form-select:focus {
+            box-shadow: 0 0 0 .2rem rgba(13, 110, 253, .12);
+            border-color: #86b7fe;
+        }
+
+    .pager-wrap {
+        display: flex;
+        justify-content: center;
+        margin-top: 30px;
+    }
+
+        .pager-wrap ul {
+            display: flex;
+            gap: 10px;
+            list-style: none;
+            padding: 14px 18px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 8px 20px rgba(0,0,0,.08);
+        }
+
+            .pager-wrap ul li {
+                list-style: none;
+            }
+
+                .pager-wrap ul li a,
+                .pager-wrap ul li span {
+                    display: inline-block;
+                    min-width: 42px;
+                    text-align: center;
+                    padding: 10px 14px;
+                    border-radius: 10px;
+                    text-decoration: none;
+                    font-weight: 600;
+                    color: #2563eb;
+                    border: 1px solid #e5e7eb;
+                    background: #fff;
+                }
+
+                .pager-wrap ul li.active span {
+                    background: #2563eb;
+                    color: white;
+                    border-color: #2563eb;
+                }
+
+                .pager-wrap ul li a:hover {
+                    background: #eff6ff;
+                }
+
+    .custom-modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, .45);
+        backdrop-filter: blur(4px);
+        z-index: 1050;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+
+    .custom-modal-dialog {
+        width: 100%;
+        max-width: 900px;
+    }
+
+    .custom-modal-content {
+        background: #fff;
+        border-radius: 24px;
+        overflow: hidden;
+        box-shadow: 0 24px 60px rgba(15, 23, 42, .20);
+        animation: modalPop .22s ease-out;
+    }
+
+    @@keyframes modalPop {
+        from {
+            opacity: 0;
+            transform: scale(.96) translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+    }
+
+    body.modal-open {
+        overflow: hidden;
+    }
+
+    @@media (max-width: 991.98px) {
+        .sales-table th,
+        .sales-table td {
+            white-space: nowrap;
+        }
+    }
+
+    @@media (max-width: 767.98px) {
+        .sales-header-card,
+        .analytics-panel,
+        .filter-panel,
+        .sales-record-panel {
+            border-radius: 18px;
+        }
+
+        .sales-table th,
+        .sales-table td {
+            font-size: 13px;
+            padding: 10px;
+            white-space: nowrap;
+        }
+
+        .table-thumb {
+            width: 46px;
+            height: 46px;
+        }
+
+        .btn {
+            font-size: 13px;
+        }
+
+        .price-pill {
+            padding: 6px 11px;
+            font-size: 13px;
+        }
+    }
+
+    .sales-table thead th a {
+        color: white;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+        .sales-table thead th a:hover {
+            color: #f8fafc;
+        }
+
+        .sales-table thead th a i.fa-sort,
+        .sales-table thead th a i.fa-sort-up,
+        .sales-table thead th a i.fa-sort-down {
+            font-size: 12px;
+            opacity: .8;
+        }
+
+    @@media (max-width: 575.98px) {
+        .hero-gradient {
+            padding: 24px;
+        }
+
+        .records-toolbar {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .sales-table thead {
+            display: none;
+        }
+
+        .sales-table, .sales-table tbody, .sales-table tr, .sales-table td {
+            display: block;
+            width: 100%;
+        }
+
+            .sales-table tbody tr {
+                margin-bottom: 16px;
+                padding: 14px;
+                border-radius: 20px;
+                background: #fff;
+                box-shadow: 0 12px 28px rgba(15,23,42,.10);
+            }
+
+                .sales-table tbody tr:hover {
+                    transform: none;
+                }
+
+            .sales-table td {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 14px;
+                border: 0;
+                border-bottom: 1px solid #eef2f7;
+                white-space: normal !important;
+            }
+
+                .sales-table td::before {
+                    content: attr(data-label);
+                    font-weight: 800;
+                    color: #334155;
+                }
+
+                .sales-table td[data-label="Image"] {
+                    justify-content: center;
+                }
+
+                    .sales-table td[data-label="Image"]::before {
+                        display: none;
+                    }
+
+                .sales-table td:last-child {
+                    border-bottom: 0;
+                }
+
+        .sales-toast {
+            left: 16px;
+            right: 16px;
+            bottom: 16px;
+        }
+    }
+</style>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            function showLoader() { $("#loadingOverlay").css("display", "flex"); }
+            function hideLoader() { $("#loadingOverlay").hide(); }
+            function showToast(message) { $("#salesToast").text(message).fadeIn(180); setTimeout(function () { $("#salesToast").fadeOut(250); }, 2600); }
+            const savedMessage = sessionStorage.getItem("salesToastMessage");
+            if (savedMessage) { showToast(savedMessage); sessionStorage.removeItem("salesToastMessage"); }
+            $(document).ajaxStart(showLoader).ajaxStop(hideLoader);
+            $("#btnPrintSales").on("click", function () { window.print(); });
+            $("#btnScrollTop").on("click", function () { window.scrollTo({ top: 0, behavior: "smooth" }); });
+            $("#btnExportCsv").on("click", function () {
+                let csv = "Date,Price,Client,Mobile,Payment,Status\n";
+                $(".sales-table tbody tr").each(function () {
+                    const cells = $(this).find("td");
+                    const row = [$(cells[1]).text().trim(), $(cells[2]).text().trim(), $(cells[3]).text().trim(), $(cells[4]).text().trim(), $(cells[5]).text().trim(), $(cells[6]).text().trim()].map(v => '"' + v.replace(/"/g, '""') + '"').join(",");
+                    csv += row + "\n";
+                });
+                const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement("a");
+                link.href = url;
+                link.download = "sales-records.csv";
+                link.click();
+                URL.revokeObjectURL(url);
+            });
+
+
+                            function openModal(data) {
+            $("#modalContainer").html(`
+                <div class="custom-modal-overlay">
+                    <div class="custom-modal-dialog">
+                        <div class="custom-modal-content">
+                            ${data}
+                        </div>
+                    </div>
+                </div>
+            `);
+
+            $("body").addClass("modal-open");
+
+            var form = $("#modalContainer").find("form");
+
+            form.removeData("validator");
+            form.removeData("unobtrusiveValidation");
+            $.validator.unobtrusive.parse(form);
+
+            form.find("input, select, textarea").on("keyup change blur", function () {
+                $(this).valid();
+            });
+        }
+
+            function closeModal() {
+                $("#modalContainer").empty();
+                $("body").removeClass("modal-open");
+            }
+            //create_ajax
+            $(document).on("click", "#btnCreateSale, #btnCreateSaleEmpty", function () {
+                $.ajax({
+                    url: '/Sales/CreatePartial',
+                    type: 'GET',
+                    success: function (data) {
+                        openModal(data);
+                    },
+                    error: function () {
+                        alert("Create form could not be loaded.");
+                    }
+                });
+            });
+            //edit-ajax
+            $(document).on("click", ".edit-btn", function () {
+                const id = $(this).data("id");
+
+                $.ajax({
+                    url: '/Sales/EditPartial?id=' + id,
+                    type: 'GET',
+                    success: function (data) {
+                        openModal(data);
+                    },
+                    error: function () {
+                        alert("Edit form could not be loaded.");
+                    }
+                });
+            });
+
+            $(document).on("click", ".btn-close-modal", function () {
+                closeModal();
+            });
+
+            $(document).on("click", ".custom-modal-content", function (e) {
+                e.stopPropagation();
+            });
+
+            $(document).on("click", ".custom-modal-overlay", function () {
+                closeModal();
+            });
+              //create_ajax_submit
+            $(document).on("submit", "#createSaleForm", function (e) {
+                e.preventDefault();
+
+                const form = this;
+                const formData = new FormData(form);
+
+                $("[data-valmsg-for]").text("");
+                $(".input-validation-error").removeClass("input-validation-error");
+
+                $.ajax({
+                    url: form.action,
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (res) {
+                        if (res.success) {
+                            sessionStorage.setItem("salesToastMessage", "Sale created successfully.");
+                            location.reload();
+                        } else if (res.errors) {
+                            $.each(res.errors, function (key, messages) {
+                                const field = $("[name='" + key + "']");
+                                const span = $("[data-valmsg-for='" + key + "']");
+
+                                field.addClass("input-validation-error");
+
+                                if (span.length) {
+                                    span.text(messages[0]);
+                                }
+                            });
+                        } else {
+                            alert(res.message || "Validation error");
+                        }
+                    },
+                    error: function () {
+                        alert("Create failed.");
+                    }
+                });
+            });
+            //edit-ajax_submit
+            $(document).on("submit", "#editSaleForm", function (e) {
+                e.preventDefault();
+
+                const form = this;
+                const formData = new FormData(form);
+
+                $("[data-valmsg-for]").text("");
+                $(".input-validation-error").removeClass("input-validation-error");
+
+                $.ajax({
+                    url: form.action,
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (res) {
+                        if (res.success) {
+                            sessionStorage.setItem("salesToastMessage", "Sale updated successfully.");
+                            location.reload();
+                        } else if (res.errors) {
+                            $.each(res.errors, function (key, messages) {
+                                const field = $("[name='" + key + "']");
+                                const span = $("[data-valmsg-for='" + key + "']");
+
+                                field.addClass("input-validation-error");
+
+                                if (span.length) {
+                                    span.text(messages[0]);
+                                }
+                            });
+                        } else {
+                            alert(res.message || "Validation error");
+                        }
+                    },
+                    error: function () {
+                        alert("Edit failed.");
+                    }
+                });
+            });
+            //Delete_ajax
+            $(document).on("click", ".delete-btn", function () {
+                const id = $(this).data("id");
+                const token = $('input[name="__RequestVerificationToken"]').val();
+
+                if (confirm("Delete this sale?")) {
+                    $.ajax({
+                        url: '/Sales/Delete',
+                        type: 'POST',
+                        data: {
+                            id: id,
+                            __RequestVerificationToken: token
+                        },
+                        success: function (res) {
+                            if (res.success) {
+                                sessionStorage.setItem("salesToastMessage", "Sale deleted successfully.");
+                                location.reload();
+                            } else {
+                                alert(res.message || "Delete failed");
+                            }
+                        },
+                        error: function () {
+                            alert("Delete failed.");
+                        }
+                    });
+                }
+            });
+
+        });
+    </script>
+}

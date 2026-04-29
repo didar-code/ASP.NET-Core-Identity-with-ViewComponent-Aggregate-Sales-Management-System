@@ -1,0 +1,216 @@
+@model SalesCoreProjectWithIdentityViewCom.Models.ViewModels.ManageUserRoleViewModel
+
+@{
+    ViewData["Title"] = "Manage User Roles";
+}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+<div class="page-header-block content-panel mb-4 manage-role-header">
+    <div>
+        <span class="section-chip mb-3">User Access</span>
+        <h1 class="h2 fw-bold mb-2">
+            <i class="fa-solid fa-user-shield text-primary me-2"></i>Manage Roles
+        </h1>
+        <p class="text-muted mb-0">
+            Assign or update authorization roles for this user from a clean and responsive admin panel.
+        </p>
+    </div>
+
+    <div class="d-flex flex-wrap gap-2">
+        <a asp-controller="Admin" asp-action="Index" class="btn btn-outline-dark rounded-pill px-4">
+            <i class="fa-solid fa-arrow-left me-2"></i>Back to Users
+        </a>
+        <a asp-controller="Admin" asp-action="ListRoles" class="btn btn-primary rounded-pill px-4">
+            <i class="fa-solid fa-list-check me-2"></i>View Roles
+        </a>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-4">
+        <div class="content-panel h-100 profile-panel">
+            <span class="section-chip mb-3">User profile</span>
+
+            <div class="d-flex align-items-center gap-3 mb-4">
+                <span class="user-pill__avatar large-avatar">
+                    @((!string.IsNullOrWhiteSpace(Model.UserName) ? Model.UserName.Substring(0, 1).ToUpper() : "U"))
+                </span>
+
+                <div>
+                    <h4 class="mb-1 fw-bold">@Model.UserName</h4>
+                    <div class="text-muted small">Authorization target account</div>
+                </div>
+            </div>
+
+            <div class="access-note-card">
+                <h5 class="mb-2">
+                    <i class="fa-solid fa-circle-info text-primary me-2"></i>Access notes
+                </h5>
+                <p class="text-muted mb-0">
+                    Select the roles that should be assigned to this user. Save changes to update authorization instantly.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-8">
+        <div class="content-panel role-panel">
+            <span class="section-chip mb-3">Role assignment</span>
+            <h3 class="h4 mb-3">
+                <i class="fa-solid fa-key text-warning me-2"></i>Choose permissions
+            </h3>
+
+            <form asp-action="ManageUserRoles" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="UserId" />
+                <input type="hidden" asp-for="UserName" />
+
+                <div class="row g-3 mb-4">
+                    @for (int i = 0; i < Model.Roles.Count; i++)
+                    {
+                        <div class="col-md-6">
+                            <div class="role-option premium-role-option">
+                                <div class="role-option-text">
+                                    <strong>
+                                        <i class="fa-solid fa-badge-check text-success me-2"></i>@Model.Roles[i].RoleName
+                                    </strong>
+                                    <div class="text-muted small">Enable access for this role</div>
+                                </div>
+
+                                <div class="form-check form-switch m-0">
+                                    <input type="hidden" asp-for="Roles[i].RoleName" />
+                                    <input class="form-check-input custom-role-switch" asp-for="Roles[i].IsSelected" />
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <div class="d-flex flex-wrap gap-2">
+                    <button type="submit" class="btn btn-primary px-4 rounded-pill shadow-sm">
+                        <i class="fa-solid fa-floppy-disk me-2"></i>Save Changes
+                    </button>
+
+                    <a asp-action="Index" class="btn btn-outline-secondary px-4 rounded-pill">
+                        <i class="fa-solid fa-xmark me-2"></i>Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .manage-role-header,
+    .profile-panel,
+    .role-panel {
+        border-radius: 24px;
+        transition: all .3s ease;
+    }
+
+        .manage-role-header:hover,
+        .profile-panel:hover,
+        .role-panel:hover {
+            box-shadow: 0 18px 40px rgba(15, 23, 42, .08);
+        }
+
+    .large-avatar {
+        width: 64px;
+        height: 64px;
+        font-size: 22px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        color: #fff;
+        background: linear-gradient(135deg, #0d6efd, #6f42c1);
+        box-shadow: 0 12px 26px rgba(13,110,253,.18);
+    }
+
+    .access-note-card {
+        background: linear-gradient(135deg, #f8fbff, #ffffff);
+        border: 1px solid #e5eef9;
+        border-radius: 20px;
+        padding: 20px;
+        transition: all .25s ease;
+    }
+
+        .access-note-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 24px rgba(15, 23, 42, .06);
+        }
+
+    .premium-role-option {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        background: linear-gradient(135deg, #ffffff, #f8fbff);
+        border: 1px solid #e8edf5;
+        border-radius: 18px;
+        padding: 18px 20px;
+        min-height: 92px;
+        transition: all .25s ease;
+    }
+
+        .premium-role-option:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 28px rgba(15, 23, 42, .07);
+            border-color: #cfe0ff;
+        }
+
+    .role-option-text strong {
+        display: block;
+        font-size: 16px;
+        color: #0f172a;
+        margin-bottom: 4px;
+    }
+
+    .custom-role-switch {
+        width: 3rem;
+        height: 1.5rem;
+        cursor: pointer;
+    }
+
+        .custom-role-switch:checked {
+            background-color: #0d6efd;
+            border-color: #0d6efd;
+        }
+
+    .btn {
+        transition: all .25s ease;
+    }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+    @@media (max-width: 991.98px) {
+        .large-avatar {
+            width: 56px;
+            height: 56px;
+            font-size: 20px;
+        }
+    }
+
+    @@media (max-width: 767.98px) {
+        .manage-role-header,
+        .profile-panel,
+        .role-panel,
+        .premium-role-option,
+        .access-note-card {
+            border-radius: 18px;
+        }
+
+        .premium-role-option {
+            min-height: auto;
+            padding: 16px;
+        }
+
+        .role-option-text strong {
+            font-size: 15px;
+        }
+    }
+</style>

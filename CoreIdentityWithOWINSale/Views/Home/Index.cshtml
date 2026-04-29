@@ -1,0 +1,1076 @@
+@model SalesCoreProjectWithIdentityViewCom.Models.ViewModels.HomeDashboardViewModel
+
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+@if (!Model.IsAuthenticated)
+{
+    <section class="hero-surface text-white">
+        <div class="row align-items-center g-4">
+            <div class="col-lg-7">
+                <span class="section-chip mb-3">Smart access + sales management</span>
+                <h1 class="display-5 fw-bold mb-3">
+                    <i class="fa-solid fa-chart-line me-2"></i>
+                    Professional dashboard experience for authentication, authorization, and sales workflow.
+                </h1>
+                <p class="lead text-white-50 mb-4">
+                    Manage users, roles, sales records, payment status, and property entries from a clean and responsive ASP.NET Core interface.
+                </p>
+
+                <div class="hero-metrics mb-4">
+                    <div class="hero-metric-item">
+                        <strong><i class="fa-solid fa-lock me-2"></i>Secure</strong>
+                        <span>Identity-powered login and authorization</span>
+                    </div>
+                    <div class="hero-metric-item">
+                        <strong><i class="fa-solid fa-mobile-screen-button me-2"></i>Responsive</strong>
+                        <span>Works beautifully on desktop, tablet, and mobile</span>
+                    </div>
+                    <div class="hero-metric-item">
+                        <strong><i class="fa-solid fa-briefcase me-2"></i>Practical</strong>
+                        <span>Sales, roles, users, and analytics in one place</span>
+                    </div>
+                </div>
+
+                <div class="d-flex flex-wrap gap-3">
+                    <a asp-controller="Account" asp-action="Register" class="btn btn-light btn-lg px-4 rounded-pill shadow-sm">
+                        <i class="fa-solid fa-user-plus me-2"></i>Get Started
+                    </a>
+                    <a asp-controller="Account" asp-action="Login" class="btn btn-outline-light btn-lg px-4 rounded-pill">
+                        <i class="fa-solid fa-right-to-bracket me-2"></i>Sign In
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-lg-5">
+                <div class="dashboard-preview p-4">
+                    <div class="preview-topbar mb-3">
+                        <span></span><span></span><span></span>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-6">
+                            <div class="mini-stat-card mini-stat-card--blue">
+                                <small><i class="fa-solid fa-cart-shopping me-1"></i>Total Sales</small>
+                                <h4>248</h4>
+                                <span>Live business overview</span>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="mini-stat-card accent mini-stat-card--green">
+                                <small><i class="fa-solid fa-money-bill-trend-up me-1"></i>Paid Revenue</small>
+                                <h4>$89K</h4>
+                                <span>Fast decision support</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="preview-list">
+                        <div>
+                            <span><i class="fa-solid fa-user-shield me-2"></i>Role Management</span>
+                            <strong>Admin can control access and permissions</strong>
+                        </div>
+                        <div>
+                            <span><i class="fa-solid fa-file-invoice-dollar me-2"></i>Sales Records</span>
+                            <strong>Store payments, clients, and properties professionally</strong>
+                        </div>
+                        <div>
+                            <span><i class="fa-solid fa-palette me-2"></i>Modern UI</span>
+                            <strong>Clean cards, tables, forms, and dashboard blocks</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="mt-5">
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="feature-card feature-card--auth">
+                    <span class="section-chip mb-3">Authentication</span>
+                    <h4><i class="fa-solid fa-fingerprint me-2"></i>Safe login flow</h4>
+                    <p class="text-muted mb-0">Identity-based login and registration keeps the application secured and organized.</p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="feature-card feature-card--role">
+                    <span class="section-chip mb-3">Authorization</span>
+                    <h4><i class="fa-solid fa-user-lock me-2"></i>Role aware pages</h4>
+                    <p class="text-muted mb-0">Admin-only sections protect role assignment, user management, and sensitive actions.</p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="feature-card feature-card--sales">
+                    <span class="section-chip mb-3">Sales System</span>
+                    <h4><i class="fa-solid fa-chart-pie me-2"></i>Manage operations</h4>
+                    <p class="text-muted mb-0">Track client data, payment status, property details, and summary insights from one place.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+}
+else
+{
+    <section class="dashboard-banner content-panel mb-4">
+        <div>
+            <span class="section-chip mb-3">Welcome back</span>
+            <h1 class="h2 fw-bold mb-2">
+                <i class="fa-solid fa-hand-sparkles text-warning me-2"></i>Hello, @Model.DisplayName
+            </h1>
+            <p class="text-muted mb-0">
+                This is your live workspace for monitoring business activity, user access, and recent sales performance.
+            </p>
+        </div>
+
+        <div class="d-flex flex-wrap gap-2">
+            <a asp-controller="Sales" asp-action="Index" class="btn btn-primary rounded-pill px-4">
+                <i class="fa-solid fa-briefcase me-2"></i>Open Sales
+            </a>
+            @if (Model.IsAdmin)
+            {
+                <a asp-controller="Admin" asp-action="Index" class="btn btn-outline-primary rounded-pill px-4">
+                    <i class="fa-solid fa-users-gear me-2"></i>Manage Users
+                </a>
+                <a asp-controller="Admin" asp-action="ListRoles" class="btn btn-outline-dark rounded-pill px-4">
+                    <i class="fa-solid fa-shield-halved me-2"></i>Roles
+                </a>
+            }
+        </div>
+    </section>
+
+    <section class="row g-4 mb-4">
+        <div class="col-sm-6 col-xl-3">
+            <div class="metric-card metric-card--blue highlight">
+                <div class="metric-icon"><i class="fa-solid fa-cart-shopping"></i></div>
+                <span class="metric-label">Total Sales</span>
+                <h2 class="counter" data-count="@Model.TotalSales">0</h2>
+                <p>All records in the system</p>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-xl-3">
+            <div class="metric-card metric-card--green">
+                <div class="metric-icon"><i class="fa-solid fa-sack-dollar"></i></div>
+                <span class="metric-label">Total Revenue</span>
+                <h2 class="counter" data-count="@Model.TotalRevenue">0</h2>
+                <p>Combined value of all sales</p>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-xl-3">
+            <div class="metric-card metric-card--purple">
+                <div class="metric-icon"><i class="fa-solid fa-circle-check"></i></div>
+                <span class="metric-label">Paid Sales</span>
+                <h2 class="counter" data-count="@Model.PaidSales">0</h2>
+                <p>Successfully completed payments</p>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-xl-3">
+            <div class="metric-card metric-card--orange soft-danger">
+                <div class="metric-icon"><i class="fa-solid fa-hourglass-half"></i></div>
+                <span class="metric-label">Unpaid Sales</span>
+                <h2 class="counter" data-count="@Model.UnpaidSales">0</h2>
+                <p>Pending payment follow-up</p>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-xl-4">
+            <div class="metric-card metric-card--teal">
+                <div class="metric-icon"><i class="fa-solid fa-building"></i></div>
+                <span class="metric-label">Properties</span>
+                <h2 class="counter" data-count="@Model.TotalProperties">0</h2>
+                <p>Total linked property entries</p>
+            </div>
+        </div>
+
+        @if (Model.IsAdmin)
+        {
+            <div class="col-sm-6 col-xl-4">
+                <div class="metric-card metric-card--pink">
+                    <div class="metric-icon"><i class="fa-solid fa-users"></i></div>
+                    <span class="metric-label">System Users</span>
+                    <h2 class="counter" data-count="@Model.TotalUsers">0</h2>
+                    <p>Total registered user accounts</p>
+                </div>
+            </div>
+        }
+
+        <div class="col-sm-6 col-xl-4">
+            <div class="metric-card metric-card--dark">
+                <div class="metric-icon"><i class="fa-solid fa-calendar-day"></i></div>
+                <span class="metric-label">Workspace</span>
+                <h2>@DateTime.Now.ToString("dd MMM")</h2>
+                <p>Stay organized with a responsive dashboard</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="row g-4 mb-4 premium-insight-row">
+        <div class="col-lg-8">
+            <div class="content-panel chart-panel h-100">
+                <div class="panel-header mb-3">
+                    <div>
+                        <span class="section-chip">Visual analytics</span>
+                        <h3 class="h4 mt-2 mb-0">
+                            <i class="fa-solid fa-chart-simple me-2 text-primary"></i>Sales performance overview
+                        </h3>
+                        <p class="text-muted mb-0">Quick comparison of sales, payment status, properties, and users.</p>
+                    </div>
+                </div>
+                <div class="chart-box">
+                    <canvas id="salesOverviewChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="content-panel h-100 progress-panel">
+                <div class="panel-header mb-3">
+                    <div>
+                        <span class="section-chip">Payment status</span>
+                        <h3 class="h4 mt-2 mb-0">
+                            <i class="fa-solid fa-gauge-high me-2 text-success"></i>Payment split
+                        </h3>
+                    </div>
+                </div>
+
+                <div class="donut-box mb-3">
+                    <canvas id="paymentDonutChart"></canvas>
+                </div>
+
+                <div class="status-progress-item mb-3">
+                    <div class="d-flex justify-content-between mb-1">
+                        <strong><i class="fa-solid fa-circle-check text-success me-2"></i>Paid</strong>
+                        <span>@Model.PaidSales</span>
+                    </div>
+                    <div class="premium-progress"><span class="progress-paid"></span></div>
+                </div>
+
+                <div class="status-progress-item">
+                    <div class="d-flex justify-content-between mb-1">
+                        <strong><i class="fa-solid fa-hourglass-half text-warning me-2"></i>Unpaid</strong>
+                        <span>@Model.UnpaidSales</span>
+                    </div>
+                    <div class="premium-progress"><span class="progress-unpaid"></span></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="row g-4">
+        <div class="col-lg-7">
+            <div class="content-panel h-100">
+                <div class="panel-header mb-3">
+                    <div>
+                        <span class="section-chip">Recent activity</span>
+                        <h3 class="h4 mt-2 mb-0">
+                            <i class="fa-solid fa-clock-rotate-left me-2 text-primary"></i>Latest sales records
+                        </h3>
+                    </div>
+                    <a asp-controller="Sales" asp-action="Index" class="btn btn-sm btn-outline-primary rounded-pill px-3">
+                        <i class="fa-solid fa-arrow-up-right-from-square me-1"></i>View all
+                    </a>
+                </div>
+
+                @if (Model.RecentSales.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table align-middle modern-table dashboard-table">
+                            <thead>
+                                <tr>
+                                    <th>Client</th>
+                                    <th>Date</th>
+                                    <th>Price</th>
+                                    <th>Payment</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.RecentSales)
+                                {
+                                    <tr class="dashboard-row">
+                                        <td>
+                                            <strong>@item.ClientName</strong>
+                                            <div class="text-muted small">@item.MobileNo</div>
+                                        </td>
+                                        <td>@item.SaleDate.ToString("dd MMM yyyy")</td>
+                                        <td>@item.TotalPrice</td>
+                                        <td>
+                                            @if (item.IsPaid)
+                                            {
+                                                <span class="badge bg-success-subtle text-success-emphasis rounded-pill px-3 py-2">
+                                                    <i class="fa-solid fa-check me-1"></i>Paid
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-warning-subtle text-warning-emphasis rounded-pill px-3 py-2">
+                                                    <i class="fa-solid fa-clock me-1"></i>Pending
+                                                </span>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="empty-state">
+                        <i class="fa-solid fa-box-open fa-2x text-muted mb-3"></i>
+                        <h5 class="mb-2">No sales yet</h5>
+                        <p class="text-muted mb-3">Start creating sales records to see live business activity here.</p>
+                        <a asp-controller="Sales" asp-action="Index" class="btn btn-primary rounded-pill px-4">
+                            <i class="fa-solid fa-plus me-2"></i>Go to Sales
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="content-panel h-100">
+                <div class="panel-header mb-3">
+                    <div>
+                        <span class="section-chip">Quick access</span>
+                        <h3 class="h4 mt-2 mb-0">
+                            <i class="fa-solid fa-bolt me-2 text-warning"></i>Shortcuts
+                        </h3>
+                    </div>
+                </div>
+
+                <div class="quick-stack">
+                    <a asp-controller="Sales" asp-action="Index" class="quick-item quick-item--blue text-decoration-none text-dark">
+                        <div>
+                            <strong><i class="fa-solid fa-store me-2"></i>Sales Workspace</strong>
+                            <div class="text-muted small">Browse, search, edit, and review all sales</div>
+                        </div>
+                        <span class="btn btn-sm btn-outline-primary rounded-pill">Open</span>
+                    </a>
+
+                    @if (Model.IsAdmin)
+                    {
+                        <a asp-controller="Admin" asp-action="Index" class="quick-item quick-item--green text-decoration-none text-dark">
+                            <div>
+                                <strong><i class="fa-solid fa-users-rectangle me-2"></i>User Directory</strong>
+                                <div class="text-muted small">Manage registered accounts and permissions</div>
+                            </div>
+                            <span class="btn btn-sm btn-outline-dark rounded-pill">Open</span>
+                        </a>
+
+                        <a asp-controller="Admin" asp-action="ListRoles" class="quick-item quick-item--purple text-decoration-none text-dark">
+                            <div>
+                                <strong><i class="fa-solid fa-key me-2"></i>Role Management</strong>
+                                <div class="text-muted small">Create and organize authorization roles</div>
+                            </div>
+                            <span class="btn btn-sm btn-outline-dark rounded-pill">Open</span>
+                        </a>
+                    }
+
+                    <div class="cta-card cta-card--gradient">
+                        <strong class="d-block mb-2">
+                            <i class="fa-solid fa-star me-2"></i>Professional workflow
+                        </strong>
+                        <span>Clean layout, secure access, and responsive management screens across the project.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+}
+
+<style>
+    .hero-metric-item {
+        transition: all .3s ease;
+        border-radius: 16px;
+        padding: 10px 12px;
+    }
+
+        .hero-metric-item:hover {
+            background: rgba(255,255,255,.08);
+            transform: translateY(-3px);
+        }
+
+    .mini-stat-card,
+    .feature-card,
+    .metric-card,
+    .quick-item,
+    .cta-card,
+    .dashboard-preview {
+        transition: all .35s ease;
+    }
+
+        .mini-stat-card:hover,
+        .feature-card:hover,
+        .metric-card:hover,
+        .quick-item:hover,
+        .cta-card:hover,
+        .dashboard-preview:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 18px 45px rgba(15, 23, 42, .12);
+        }
+
+    .dashboard-preview {
+        background: #ffffff;
+        border-radius: 28px;
+        box-shadow: 0 20px 45px rgba(15,23,42,.10);
+    }
+
+    .preview-list div {
+        background: linear-gradient(135deg, #f8fafc, #ffffff);
+        border: 1px solid #e2e8f0;
+        border-radius: 18px;
+        padding: 16px 18px;
+        margin-bottom: 14px;
+        transition: all .25s ease;
+    }
+
+        .preview-list div:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 24px rgba(15,23,42,.08);
+        }
+
+        .preview-list div span {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #475569;
+            margin-bottom: 6px;
+        }
+
+        .preview-list div strong {
+            display: block;
+            font-size: 15px;
+            font-weight: 700;
+            color: #0f172a;
+            line-height: 1.5;
+        }
+
+    .mini-stat-card small {
+        color: #475569;
+        font-weight: 600;
+    }
+
+    .mini-stat-card h4 {
+        color: #0f172a;
+        font-weight: 800;
+    }
+
+    .mini-stat-card span {
+        color: #334155;
+    }
+
+    .mini-stat-card--blue {
+        background: linear-gradient(135deg, rgba(79,172,254,.18), rgba(0,242,254,.15));
+        border: 1px solid rgba(79,172,254,.25);
+        border-radius: 20px;
+        padding: 18px;
+    }
+
+    .mini-stat-card--green {
+        background: linear-gradient(135deg, rgba(67,233,123,.18), rgba(56,249,215,.15));
+        border: 1px solid rgba(67,233,123,.25);
+        border-radius: 20px;
+        padding: 18px;
+    }
+
+    .feature-card--auth {
+        border-top: 4px solid #4facfe;
+    }
+
+    .feature-card--role {
+        border-top: 4px solid #7c3aed;
+    }
+
+    .feature-card--sales {
+        border-top: 4px solid #10b981;
+    }
+
+    .metric-card {
+        position: relative;
+        overflow: hidden;
+        border-radius: 24px;
+    }
+
+        .metric-card::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            opacity: .95;
+            z-index: 0;
+        }
+
+        .metric-card > * {
+            position: relative;
+            z-index: 1;
+        }
+
+    .metric-icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 14px;
+        font-size: 20px;
+        background: rgba(255,255,255,.65);
+        box-shadow: 0 10px 25px rgba(15,23,42,.08);
+    }
+
+    .metric-card--blue::before {
+        background: linear-gradient(135deg, #e0f2fe, #dbeafe);
+    }
+
+    .metric-card--green::before {
+        background: linear-gradient(135deg, #dcfce7, #d1fae5);
+    }
+
+    .metric-card--purple::before {
+        background: linear-gradient(135deg, #ede9fe, #e9d5ff);
+    }
+
+    .metric-card--orange::before {
+        background: linear-gradient(135deg, #ffedd5, #fef3c7);
+    }
+
+    .metric-card--teal::before {
+        background: linear-gradient(135deg, #ccfbf1, #cffafe);
+    }
+
+    .metric-card--pink::before {
+        background: linear-gradient(135deg, #fce7f3, #fbcfe8);
+    }
+
+    .metric-card--dark::before {
+        background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
+    }
+
+    .dashboard-table .dashboard-row {
+        transition: all .25s ease;
+    }
+
+        .dashboard-table .dashboard-row:hover {
+            background: #f8fbff;
+            transform: scale(1.01);
+        }
+
+    .quick-item {
+        border-radius: 18px;
+        padding: 16px;
+        border: 1px solid #e9eef5;
+    }
+
+    .quick-item--blue:hover {
+        background: linear-gradient(135deg, rgba(79,172,254,.10), rgba(0,242,254,.08));
+    }
+
+    .quick-item--green:hover {
+        background: linear-gradient(135deg, rgba(67,233,123,.10), rgba(56,249,215,.08));
+    }
+
+    .quick-item--purple:hover {
+        background: linear-gradient(135deg, rgba(124,58,237,.08), rgba(168,85,247,.08));
+    }
+
+    .cta-card--gradient {
+        background: linear-gradient(135deg, #1e293b, #334155);
+        color: #fff;
+        border-radius: 22px;
+    }
+
+        .cta-card--gradient span {
+            color: rgba(255,255,255,.8);
+        }
+
+
+    .premium-insight-row .content-panel {
+        overflow: hidden;
+    }
+
+    .chart-panel {
+        background: linear-gradient(135deg, #ffffff, #f8fbff);
+    }
+
+    .chart-box {
+        min-height: 310px;
+        position: relative;
+        padding: 10px;
+    }
+
+    .donut-box {
+        max-width: 260px;
+        margin: 0 auto;
+        min-height: 230px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+        .chart-box canvas, .donut-box canvas {
+            width: 100% !important;
+        }
+
+    .progress-panel {
+        background: radial-gradient(circle at top right, rgba(13,110,253,.10), transparent 35%), #ffffff;
+    }
+
+    .premium-progress {
+        height: 12px;
+        background: #e2e8f0;
+        border-radius: 999px;
+        overflow: hidden;
+        box-shadow: inset 0 2px 6px rgba(15,23,42,.08);
+    }
+
+        .premium-progress span {
+            display: block;
+            height: 100%;
+            width: 0;
+            border-radius: 999px;
+            animation: progressFill 1.2s ease forwards;
+        }
+
+    .progress-paid {
+        background: linear-gradient(90deg, #22c55e, #14b8a6);
+    }
+
+    .progress-unpaid {
+        background: linear-gradient(90deg, #f59e0b, #fb7185);
+    }
+
+    @@keyframes progressFill {
+        from {
+            width: 0;
+        }
+
+        to {
+            width: var(--target-width);
+        }
+    }
+
+    .metric-card {
+        animation: cardRise .65s ease both;
+    }
+
+    @@keyframes cardRise {
+        from {
+            opacity: 0;
+            transform: translateY(16px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@media (max-width: 991.98px) {
+        .metric-card h2 {
+            font-size: 1.75rem;
+        }
+
+        .dashboard-banner {
+            gap: 1rem;
+        }
+    }
+
+    @@media (max-width: 767.98px) {
+        .dashboard-preview,
+        .content-panel,
+        .metric-card,
+        .feature-card {
+            border-radius: 18px;
+        }
+
+        .metric-card,
+        .feature-card,
+        .mini-stat-card,
+        .quick-item {
+            text-align: left;
+        }
+
+        .metric-icon {
+            width: 46px;
+            height: 46px;
+            font-size: 18px;
+        }
+
+        .table th,
+        .table td {
+            font-size: 13px;
+            white-space: nowrap;
+        }
+    }
+
+    /* ===== Final Premium Polish: Strong Hover + Color + Responsive ===== */
+
+    body {
+        background: radial-gradient(circle at top left, rgba(37, 99, 235, .08), transparent 32%), radial-gradient(circle at top right, rgba(124, 58, 237, .08), transparent 30%), #f6f8fc;
+    }
+
+    .dashboard-banner {
+        background: linear-gradient(135deg, #2563eb, #7c3aed, #06b6d4);
+        border: 0;
+        border-radius: 28px;
+        box-shadow: 0 22px 55px rgba(37, 99, 235, .20);
+        color: #fff;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .dashboard-banner::after {
+            content: "";
+            position: absolute;
+            width: 220px;
+            height: 220px;
+            right: -60px;
+            top: -70px;
+            border-radius: 50%;
+            background: rgba(255,255,255,.16);
+        }
+
+        .dashboard-banner .text-muted {
+            color: rgba(255,255,255,.82) !important;
+        }
+
+        .dashboard-banner .section-chip {
+            background: rgba(255,255,255,.18);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,.28);
+        }
+
+    .content-panel,
+    .metric-card,
+    .feature-card,
+    .quick-item,
+    .cta-card,
+    .dashboard-preview,
+    .mini-stat-card {
+        transition: transform .35s ease, box-shadow .35s ease, background .35s ease, border-color .35s ease;
+    }
+
+        .content-panel:hover,
+        .metric-card:hover,
+        .feature-card:hover,
+        .quick-item:hover,
+        .cta-card:hover,
+        .dashboard-preview:hover,
+        .mini-stat-card:hover {
+            transform: translateY(-8px) scale(1.01);
+            box-shadow: 0 24px 58px rgba(15, 23, 42, .16);
+        }
+
+    .metric-card {
+        cursor: pointer;
+        min-height: 205px;
+        border: 1px solid rgba(255,255,255,.55);
+        box-shadow: 0 16px 36px rgba(15,23,42,.08);
+    }
+
+        .metric-card h2 {
+            font-weight: 900;
+            letter-spacing: -.5px;
+        }
+
+    .metric-card--blue::before {
+        background: linear-gradient(135deg, #dbeafe, #bfdbfe, #e0f2fe);
+    }
+
+    .metric-card--green::before {
+        background: linear-gradient(135deg, #dcfce7, #bbf7d0, #ccfbf1);
+    }
+
+    .metric-card--purple::before {
+        background: linear-gradient(135deg, #ede9fe, #ddd6fe, #f5d0fe);
+    }
+
+    .metric-card--orange::before {
+        background: linear-gradient(135deg, #ffedd5, #fed7aa, #fef3c7);
+    }
+
+    .metric-card--teal::before {
+        background: linear-gradient(135deg, #ccfbf1, #a7f3d0, #cffafe);
+    }
+
+    .metric-card--pink::before {
+        background: linear-gradient(135deg, #fce7f3, #fbcfe8, #fae8ff);
+    }
+
+    .metric-card--dark::before {
+        background: linear-gradient(135deg, #e2e8f0, #cbd5e1, #f1f5f9);
+    }
+
+    .metric-icon {
+        transition: all .35s ease;
+    }
+
+    .metric-card:hover .metric-icon {
+        transform: rotate(-6deg) scale(1.08);
+        background: rgba(255,255,255,.85);
+    }
+
+    .chart-panel,
+    .progress-panel {
+        border: 1px solid rgba(226,232,240,.85);
+        box-shadow: 0 16px 40px rgba(15,23,42,.07);
+    }
+
+    .chart-box {
+        height: 330px;
+    }
+
+    .donut-box {
+        height: 245px;
+    }
+
+    .quick-stack {
+        display: grid;
+        gap: 14px;
+    }
+
+    .quick-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        background: #fff;
+        box-shadow: 0 10px 28px rgba(15,23,42,.06);
+    }
+
+        .quick-item:hover {
+            border-color: rgba(37,99,235,.28);
+        }
+
+    .dashboard-table {
+        overflow: hidden;
+        border-radius: 18px;
+    }
+
+        .dashboard-table thead th {
+            background: linear-gradient(135deg, #eff6ff, #f8fafc);
+            color: #334155;
+            border: 0;
+            font-weight: 800;
+        }
+
+        .dashboard-table tbody td {
+            vertical-align: middle;
+        }
+
+        .dashboard-table .dashboard-row:hover {
+            background: linear-gradient(90deg, #eff6ff, #ffffff);
+            transform: scale(1.01);
+            box-shadow: 0 10px 26px rgba(15,23,42,.08);
+        }
+
+    .btn {
+        transition: transform .25s ease, box-shadow .25s ease;
+    }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 28px rgba(15,23,42,.16);
+        }
+
+    @@media (max-width: 991.98px) {
+        .dashboard-banner
+
+    {
+        padding: 24px !important;
+    }
+
+    .dashboard-banner,
+    .dashboard-banner > div {
+        gap: 1rem;
+    }
+
+        .dashboard-banner .d-flex {
+            width: 100%;
+        }
+
+    .metric-card {
+        min-height: 185px;
+    }
+
+    .chart-box {
+        height: 285px;
+    }
+
+    .donut-box {
+        height: 230px;
+    }
+
+    }
+
+    @@media (max-width: 767.98px) {
+        body
+
+    {
+        overflow-x: hidden;
+    }
+
+    .hero-surface,
+    .dashboard-banner,
+    .content-panel,
+    .metric-card,
+    .feature-card,
+    .dashboard-preview,
+    .quick-item,
+    .cta-card {
+        border-radius: 18px !important;
+    }
+
+    .display-5 {
+        font-size: 1.85rem;
+        line-height: 1.25;
+    }
+
+    .h2 {
+        font-size: 1.55rem;
+    }
+
+    .metric-card {
+        min-height: auto;
+        padding: 18px !important;
+    }
+
+        .metric-card h2 {
+            font-size: 1.65rem;
+        }
+
+    .quick-item {
+        display: block;
+    }
+
+        .quick-item .btn,
+        .dashboard-banner .btn {
+            width: 100%;
+            margin-top: 10px;
+        }
+
+    .chart-box {
+        height: 245px;
+        padding: 0;
+    }
+
+    .donut-box {
+        height: 215px;
+    }
+
+    .table-responsive {
+        border-radius: 16px;
+        overflow-x: auto;
+    }
+
+    .table th,
+    .table td {
+        font-size: 13px;
+        padding: 10px;
+        white-space: nowrap;
+    }
+
+    }
+
+    @@media (max-width: 575.98px) {
+        .hero-metrics
+
+    {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .dashboard-banner {
+        padding: 20px !important;
+    }
+
+    .metric-icon {
+        width: 44px;
+        height: 44px;
+        font-size: 17px;
+    }
+
+    .metric-card h2 {
+        font-size: 1.45rem;
+    }
+
+    .chart-box {
+        height: 220px;
+    }
+
+    .donut-box {
+        height: 200px;
+    }
+
+    .content-panel {
+        padding: 18px !important;
+    }
+
+    }</style>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const totalSales = Number('@Model.TotalSales') || 0;
+            const paidSales = Number('@Model.PaidSales') || 0;
+            const unpaidSales = Number('@Model.UnpaidSales') || 0;
+            const totalProperties = Number('@Model.TotalProperties') || 0;
+            const totalUsers = Number('@Model.TotalUsers') || 0;
+            const totalPayment = paidSales + unpaidSales;
+            const paidPercent = totalPayment > 0 ? Math.round((paidSales / totalPayment) * 100) : 0;
+            const unpaidPercent = totalPayment > 0 ? Math.round((unpaidSales / totalPayment) * 100) : 0;
+
+            document.querySelectorAll('.counter').forEach(function (counter) {
+                const target = parseFloat(counter.dataset.count) || 0;
+                let current = 0;
+                const increment = target / 45;
+                const timer = setInterval(function () {
+                    current += increment;
+                    if (current >= target) { current = target; clearInterval(timer); }
+                    counter.textContent = Number.isInteger(target) ? Math.round(current).toLocaleString() : current.toLocaleString(undefined, { maximumFractionDigits: 2 });
+                }, 18);
+            });
+
+            const paidBar = document.querySelector('.progress-paid');
+            const unpaidBar = document.querySelector('.progress-unpaid');
+            if (paidBar) paidBar.style.setProperty('--target-width', paidPercent + '%');
+            if (unpaidBar) unpaidBar.style.setProperty('--target-width', unpaidPercent + '%');
+
+            const overviewCanvas = document.getElementById('salesOverviewChart');
+            if (overviewCanvas && window.Chart) {
+                new Chart(overviewCanvas, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Total Sales', 'Paid', 'Unpaid', 'Properties', 'Users'],
+                        datasets: [{
+                            label: 'Dashboard Count',
+                            data: [totalSales, paidSales, unpaidSales, totalProperties, totalUsers],
+                            backgroundColor: ['rgba(37,99,235,.75)','rgba(34,197,94,.75)','rgba(245,158,11,.75)','rgba(20,184,166,.75)','rgba(236,72,153,.75)'],
+                            borderRadius: 14,
+                            borderSkipped: false
+                        }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 }, grid: { color: 'rgba(148,163,184,.18)' } }, x: { grid: { display: false } } } }
+                });
+            }
+
+            const donutCanvas = document.getElementById('paymentDonutChart');
+            if (donutCanvas && window.Chart) {
+                new Chart(donutCanvas, {
+                    type: 'doughnut',
+                    data: { labels: ['Paid', 'Unpaid'], datasets: [{ data: [paidSales, unpaidSales], backgroundColor: ['rgba(34,197,94,.85)', 'rgba(245,158,11,.85)'], borderColor: '#ffffff', borderWidth: 4, hoverOffset: 8 }] },
+                    options: { responsive: true, maintainAspectRatio: false, cutout: '68%', plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, boxWidth: 8 } } } }
+                });
+            }
+        });
+    </script>
+}

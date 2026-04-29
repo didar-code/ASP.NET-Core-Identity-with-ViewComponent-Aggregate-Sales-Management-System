@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewData["Title"] - SalesCoreProjectWithIdentityViewCom</title>
+
+    <link href="~/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/css/site.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        .glass-nav {
+            background: rgba(255,255,255,.92);
+            backdrop-filter: blur(18px);
+            border-bottom: 1px solid rgba(15,23,42,.06);
+            box-shadow: 0 10px 35px rgba(15,23,42,.06);
+            transition: all .35s ease;
+        }
+
+        .brand-mark {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            transition: all .3s ease;
+        }
+
+            .brand-mark:hover {
+                transform: translateY(-2px);
+            }
+
+        .brand-mark__dot {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #0d6efd, #6f42c1, #0dcaf0);
+            box-shadow: 0 0 0 7px rgba(13, 110, 253, 0.10);
+            transition: all .3s ease;
+        }
+
+        .brand-mark:hover .brand-mark__dot {
+            transform: scale(1.12);
+            box-shadow: 0 0 0 9px rgba(13, 110, 253, 0.14);
+        }
+
+        .brand-mark strong {
+            display: block;
+            color: #0f172a;
+            line-height: 1.1;
+            font-size: 1rem;
+            font-weight: 800;
+        }
+
+        .brand-mark small {
+            display: block;
+            color: #64748b;
+            font-size: .75rem;
+            line-height: 1.1;
+            letter-spacing: .04em;
+            text-transform: uppercase;
+        }
+
+        .navbar-nav .nav-link {
+            position: relative;
+            font-weight: 700;
+            color: #334155 !important;
+            padding: .7rem 1rem !important;
+            border-radius: 999px;
+            transition: all .25s ease;
+        }
+
+            .navbar-nav .nav-link:hover,
+            .navbar-nav .nav-link:focus {
+                color: #0d6efd !important;
+                background: linear-gradient(135deg, rgba(13,110,253,.10), rgba(111,66,193,.08));
+                transform: translateY(-2px);
+                box-shadow: 0 10px 24px rgba(13,110,253,.10);
+            }
+
+        .navbar-nav .dropdown-menu {
+            min-width: 250px;
+            padding: .7rem;
+            border-radius: 22px;
+            border: 1px solid rgba(226,232,240,.85);
+            box-shadow: 0 18px 45px rgba(15,23,42,.12);
+        }
+
+        .navbar-nav .dropdown-item {
+            border-radius: 14px;
+            padding: .78rem .95rem;
+            font-weight: 600;
+            color: #334155;
+            transition: all .22s ease;
+        }
+
+            .navbar-nav .dropdown-item:hover {
+                background: linear-gradient(135deg, rgba(13,110,253,.12), rgba(111,66,193,.09));
+                color: #0d6efd;
+                transform: translateX(3px);
+            }
+
+        .page-stage {
+            min-height: calc(100vh - 150px);
+            background: radial-gradient(circle at top right, rgba(13,110,253,.07), transparent 24%), radial-gradient(circle at bottom left, rgba(111,66,193,.07), transparent 22%), linear-gradient(180deg, #f8fbff 0%, #ffffff 45%, #f8fafc 100%);
+        }
+
+        .site-footer {
+            border-top: 1px solid rgba(15, 23, 42, 0.06);
+            background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+            padding: 20px 0;
+            transition: all .35s ease;
+        }
+
+            .site-footer:hover {
+                box-shadow: 0 -10px 30px rgba(15,23,42,.05);
+            }
+
+            .site-footer strong {
+                color: #0f172a;
+                font-weight: 800;
+            }
+
+        .navbar-toggler {
+            border-radius: 14px;
+            padding: .55rem .8rem;
+            background: linear-gradient(135deg, rgba(13,110,253,.10), rgba(111,66,193,.08));
+            transition: all .25s ease;
+        }
+
+            .navbar-toggler:hover {
+                transform: translateY(-1px);
+                box-shadow: 0 10px 22px rgba(13,110,253,.12);
+            }
+
+            .navbar-toggler:focus {
+                box-shadow: 0 0 0 .2rem rgba(13,110,253,.12);
+            }
+
+        .navbar-collapse > .d-flex,
+        .navbar-collapse > ul + * {
+            color: #334155 !important;
+        }
+
+        .navbar-collapse .text-white,
+        .navbar-collapse .text-light,
+        .navbar-collapse .text-white-50 {
+            color: inherit !important;
+        }
+
+        .navbar-collapse .btn-outline-light,
+        .navbar-collapse .btn-light {
+            border-color: #cbd5e1;
+            color: #334155 !important;
+            background: #ffffff;
+        }
+
+            .navbar-collapse .btn-outline-light:hover,
+            .navbar-collapse .btn-light:hover {
+                background: #0d6efd;
+                color: #fff !important;
+                border-color: #0d6efd;
+            }
+
+        .navbar-collapse .btn-primary {
+            color: #fff !important;
+        }
+
+        .navbar-user-pill,
+        .user-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            border-radius: 999px;
+            background: linear-gradient(135deg, rgba(13,110,253,.08), rgba(111,66,193,.08));
+            border: 1px solid rgba(13, 110, 253, 0.10);
+            transition: all .25s ease;
+        }
+
+            .navbar-user-pill:hover,
+            .user-pill:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 12px 28px rgba(15,23,42,.10);
+            }
+
+            .navbar-user-pill .user-pill__avatar,
+            .user-pill .user-pill__avatar {
+                width: 38px;
+                height: 38px;
+                border-radius: 50%;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: 800;
+                color: #fff;
+                background: linear-gradient(135deg, #0d6efd, #6f42c1, #0dcaf0);
+                box-shadow: 0 8px 18px rgba(13,110,253,.18);
+                flex-shrink: 0;
+            }
+
+            .navbar-user-email,
+            .user-pill strong {
+                color: #0f172a !important;
+                font-size: 14px;
+                line-height: 1.2;
+            }
+
+            .navbar-user-status,
+            .user-pill span:last-child,
+            .user-pill .small span {
+                color: #64748b !important;
+                font-size: 12px;
+            }
+
+        .nav-auth-btn {
+            min-height: 42px;
+            font-weight: 700;
+            transition: all .25s ease;
+        }
+
+            .nav-auth-btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 12px 28px rgba(15,23,42,.12);
+            }
+
+        @@media (max-width: 991.98px) {
+            .navbar-collapse {
+                margin-top: 14px;
+                padding: 16px;
+                border-radius: 22px;
+                background: #fff;
+                box-shadow: 0 18px 45px rgba(15, 23, 42, 0.10);
+                animation: fadeSlide .35s ease;
+            }
+
+            .navbar-nav {
+                gap: .35rem !important;
+            }
+
+                .navbar-nav .nav-link {
+                    border-radius: 14px;
+                }
+
+            .user-pill,
+            .navbar-user-pill {
+                width: 100%;
+                justify-content: flex-start;
+            }
+
+            .nav-auth-btn {
+                width: 100%;
+            }
+        }
+
+        @@media (max-width: 575.98px) {
+            .brand-mark strong {
+                font-size: .9rem;
+            }
+
+            .brand-mark small {
+                font-size: .65rem;
+            }
+
+            .brand-mark__dot {
+                width: 13px;
+                height: 13px;
+            }
+
+            .site-footer {
+                text-align: center;
+            }
+        }
+
+        @@keyframes fadeSlide {
+            from {
+                opacity: 0;
+                transform: translateY(-8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-shell">
+        <header class="sticky-top">
+            <nav class="navbar navbar-expand-lg glass-nav shadow-sm">
+                <div class="container-xxl">
+                    <a class="navbar-brand brand-mark" asp-controller="Home" asp-action="Index">
+                        <span class="brand-mark__dot"></span>
+                        <span>
+                            <strong>Property Sales System</strong>
+                            <small>ASP.NET Core Authentication Platform</small>
+                        </span>
+                    </a>
+
+                    <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+                        <i class="fa-solid fa-bars text-primary"></i>
+                    </button>
+
+                    <div class="collapse navbar-collapse" id="mainNav">
+                        <ul class="navbar-nav mx-auto gap-lg-2 mb-3 mb-lg-0">
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Home" asp-action="Index">
+                                    <i class="fa-solid fa-gauge-high me-2"></i>Dashboard
+                                </a>
+                            </li>
+
+                            @if (User.Identity?.IsAuthenticated ?? false)
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="Sales" asp-action="Index">
+                                        <i class="fa-solid fa-briefcase me-2"></i>Sales
+                                    </a>
+                                </li>
+
+                                @if (User.IsInRole("Admin"))
+                                {
+                                    <li class="nav-item dropdown">
+                                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="fa-solid fa-user-shield me-2"></i>Admin
+                                        </a>
+                                        <ul class="dropdown-menu shadow-lg border-0 rounded-4">
+                                            <li>
+                                                <a class="dropdown-item" asp-controller="Admin" asp-action="Index">
+                                                    <i class="fa-solid fa-users me-2 text-primary"></i>User Directory
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item" asp-controller="Admin" asp-action="ListRoles">
+                                                    <i class="fa-solid fa-user-lock me-2 text-success"></i>Roles & Permissions
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                }
+                            }
+
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Home" asp-action="Privacy">
+                                    <i class="fa-solid fa-shield-halved me-2"></i>About
+                                </a>
+                            </li>
+                        </ul>
+
+                        <partial name="_LoginPartial" />
+                    </div>
+                </div>
+            </nav>
+        </header>
+
+        <main class="page-stage">
+            <div class="container-xxl py-4 py-lg-5">
+                @RenderBody()
+            </div>
+        </main>
+
+        <footer class="site-footer">
+            <div class="container-xxl d-flex flex-column flex-lg-row justify-content-between align-items-center gap-2">
+                <div>
+                    <strong>Property Sales Management System</strong>
+                    <span class="text-muted">ASP.NET Core based property sales, secure authentication, role management, and admin control platform.</span>
+                </div>
+                <div class="text-muted small">
+                    © @DateTime.Now.Year · Built with <i class="fa-solid fa-heart text-danger mx-1"></i> ASP.NET Core MVC for Property Sales & Authentication
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script src="~/jquery/jquery.min.js"></script>
+    <script src="~/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="~/jquery-validate/jquery.validate.min.js"></script>
+    <script src="~/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

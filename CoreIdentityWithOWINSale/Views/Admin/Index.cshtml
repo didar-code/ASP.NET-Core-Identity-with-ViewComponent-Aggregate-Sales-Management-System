@@ -1,0 +1,265 @@
+@model IEnumerable<Microsoft.AspNetCore.Identity.IdentityUser>
+@using SalesCoreProjectWithIdentityViewCom.Models
+
+@{
+    ViewData["Title"] = "User Directory";
+    var paymentMethods = ViewBag.PaymentMethods as IEnumerable<PaymentMethod>;
+}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+<div class="page-header-block content-panel mb-4 shadow-sm rounded-4 p-4">
+    <div>
+        <span class="section-chip mb-3">Administration</span>
+        <h1 class="h2 fw-bold mb-2 text-primary">User Directory</h1>
+        <p class="text-muted mb-0">Review registered users and manage roles, payment methods, and admin settings from one place.</p>
+    </div>
+
+    <div class="d-flex flex-wrap gap-2 mt-3">
+        <a asp-controller="Admin" asp-action="ListRoles" class="btn btn-outline-dark rounded-pill px-4">
+            <i class="fa-solid fa-user-shield me-2"></i>View Roles
+        </a>
+
+        <a asp-controller="Home" asp-action="Index" class="btn btn-primary rounded-pill px-4">
+            <i class="fa-solid fa-house me-2"></i>Dashboard
+        </a>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+
+    <div class="col-md-3">
+        <div class="summary-card gradient-blue">
+            <i class="fa-solid fa-users summary-icon"></i>
+            <span>Total Users</span>
+            <h3>@Model.Count()</h3>
+            <small>All registered accounts</small>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="summary-card gradient-purple">
+            <i class="fa-solid fa-user-lock summary-icon"></i>
+            <span>Admin Tools</span>
+            <h3>Roles</h3>
+            <small>Manage permissions</small>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="summary-card gradient-green">
+            <i class="fa-solid fa-credit-card summary-icon"></i>
+            <span>Payment</span>
+            <h3>@(paymentMethods?.Count() ?? 0)</h3>
+            <small>Available methods</small>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="summary-card gradient-red">
+            <i class="fa-solid fa-shield-halved summary-icon"></i>
+            <span>Security</span>
+            <h3>Identity</h3>
+            <small>Authorization control</small>
+        </div>
+    </div>
+
+</div>
+
+<div class="row g-4">
+
+    <div class="col-lg-7">
+        <div class="content-panel shadow-sm rounded-4 p-4 h-100">
+
+            <div class="panel-header mb-3">
+                <span class="section-chip">Directory</span>
+                <h3 class="h4 mt-2 mb-0">Registered users</h3>
+            </div>
+
+            @if (Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table modern-table align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>User</th>
+                                <th>Email</th>
+                                <th>User Id</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach (var user in Model)
+                            {
+                                var initial = !string.IsNullOrWhiteSpace(user.Email)
+                                ? user.Email.Substring(0, 1).ToUpper()
+                                : "U";
+
+                                <tr class="table-row-hover">
+                                    <td>
+                                        <div class="d-flex align-items-center gap-3">
+                                            <span class="user-pill__avatar">@initial</span>
+                                            <div>
+                                                <strong>@(user.UserName ?? "User")</strong>
+                                                <div class="text-muted small">Identity account</div>
+                                            </div>
+                                        </div>
+                                    </td>
+
+                                    <td>@user.Email</td>
+
+                                    <td class="text-muted small">@user.Id</td>
+
+                                    <td class="text-end">
+                                        <a asp-action="ManageUserRoles"
+                                           asp-route-userId="@user.Id"
+                                           class="btn btn-sm btn-outline-primary rounded-pill px-3">
+                                            <i class="fa-solid fa-gear me-1"></i>Manage
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="empty-state py-4">
+                    <h5>No users found</h5>
+                </div>
+            }
+
+        </div>
+    </div>
+
+    <div class="col-lg-5">
+
+        <div class="content-panel shadow-sm rounded-4 p-4 mb-4">
+
+            <div class="panel-header mb-3">
+                <span class="section-chip">Payment Setup</span>
+                <h3 class="h4 mt-2 mb-0">Add payment method</h3>
+            </div>
+
+            <form asp-action="CreatePaymentMethod" method="post">
+                @Html.AntiForgeryToken()
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Payment Method Name</label>
+                    <input type="text"
+                           name="paymentType"
+                           class="form-control rounded-3"
+                           placeholder="Cash / Bank Transfer / bKash" />
+                </div>
+
+                <button type="submit" class="btn btn-success w-100 rounded-pill">
+                    <i class="fa-solid fa-plus me-2"></i>Add Payment Method
+                </button>
+            </form>
+
+        </div>
+
+        <div class="content-panel shadow-sm rounded-4 p-4">
+
+            <div class="panel-header mb-3">
+                <span class="section-chip">Payment Methods</span>
+                <h3 class="h4 mt-2 mb-0">Available methods</h3>
+            </div>
+
+            @if (paymentMethods != null && paymentMethods.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table modern-table align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>ID</th>
+                                <th>Method</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach (var item in paymentMethods)
+                            {
+                                <tr class="table-row-hover">
+                                    <td>@item.PaymentTypeId</td>
+                                    <td>@item.PaymentType</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+
+        </div>
+
+    </div>
+</div>
+
+<style>
+    .summary-card {
+        position: relative;
+        border-radius: 20px;
+        padding: 24px;
+        color: white;
+        min-height: 160px;
+        box-shadow: 0 12px 30px rgba(0,0,0,.12);
+        transition: .35s;
+    }
+
+        .summary-card:hover {
+            transform: translateY(-6px);
+        }
+
+    .summary-icon {
+        position: absolute;
+        right: 20px;
+        top: 20px;
+        font-size: 28px;
+        opacity: .25;
+    }
+
+    .gradient-blue {
+        background: linear-gradient(135deg,#4facfe,#00f2fe);
+    }
+
+    .gradient-purple {
+        background: linear-gradient(135deg,#667eea,#764ba2);
+    }
+
+    .gradient-green {
+        background: linear-gradient(135deg,#43e97b,#38f9d7);
+    }
+
+    .gradient-red {
+        background: linear-gradient(135deg,#ff5858,#f857a6);
+    }
+
+    .table-row-hover:hover {
+        background: #f8fbff;
+        transition: .25s;
+    }
+
+    .user-pill__avatar {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        background: linear-gradient(135deg,#4facfe,#00f2fe);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+    }
+
+    @@media(max - width:768px) {
+        .summary-card
+
+    {
+        min-height: 140px;
+    }
+
+    }
+    </style>

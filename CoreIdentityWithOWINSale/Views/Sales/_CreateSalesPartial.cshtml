@@ -1,0 +1,227 @@
+@model SalesCoreProjectWithIdentityViewCom.ViewModels.SalesViewModel
+
+<div class="modal-header bg-primary text-white">
+    <h5 class="modal-title fw-bold">
+        <i class="fa-solid fa-cart-plus me-2"></i> Add New Sale
+    </h5>
+    <button type="button" class="btn-close btn-close-white btn-close-modal"></button>
+</div>
+
+<div class="modal-body bg-light">
+    @using (Html.BeginForm("CreateSale", "Sales", FormMethod.Post, new { id = "createSaleForm", enctype = "multipart/form-data" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true, "", new { @class = "alert alert-danger py-2" })
+
+        <div class="row g-4">
+
+            <div class="col-lg-7">
+                <div class="card border-0 shadow-lg rounded-4 sale-card">
+                    <div class="card-body p-4">
+
+                        <h5 class="text-primary mb-4 fw-bold">
+                            <i class="fa-solid fa-circle-info me-2"></i> Sale Information
+                        </h5>
+
+                        <div class="mb-3">
+                            @Html.LabelFor(m => m.ClientName, new { @class = "fw-semibold" })
+                            @Html.TextBoxFor(m => m.ClientName, new { @class = "form-control modern-input" })
+                            @Html.ValidationMessageFor(m => m.ClientName, "", new { @class = "text-danger small" })
+                        </div>
+
+                        <div class="mb-3">
+                            @Html.LabelFor(m => m.TotalPrice, new { @class = "fw-semibold" })
+                            @Html.TextBoxFor(m => m.TotalPrice, new { @class = "form-control modern-input" })
+                            @Html.ValidationMessageFor(m => m.TotalPrice, "", new { @class = "text-danger small" })
+                        </div>
+
+                        <div class="mb-3">
+                            @Html.LabelFor(m => m.SaleDate, new { @class = "fw-semibold" })
+                            @Html.TextBoxFor(m => m.SaleDate, "{0:yyyy-MM-dd}", new { @class = "form-control modern-input", type = "date" })
+                            @Html.ValidationMessageFor(m => m.SaleDate, "", new { @class = "text-danger small" })
+                        </div>
+
+                        <div class="mb-3">
+                            @Html.LabelFor(m => m.MobileNo, new { @class = "fw-semibold" })
+                            @Html.TextBoxFor(m => m.MobileNo, new { @class = "form-control modern-input" })
+                            @Html.ValidationMessageFor(m => m.MobileNo, "", new { @class = "text-danger small" })
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="fw-semibold text-dark">
+                                <i class="fa-solid fa-credit-card me-2 text-success"></i> Payment Method
+                            </label>
+
+                            @Html.DropDownListFor(
+                            m => m.PaymentTypeId,
+                                                new SelectList(Model.PaymentMethods, "PaymentTypeId", "PaymentType"),
+                                                "Select Payment Method",
+                                                new { @class = "form-select modern-select" }
+                                                )
+
+                        @Html.ValidationMessageFor(m => m.PaymentTypeId, "", new { @class = "text-danger small" })
+                    </div>
+
+                    <div class="form-check form-switch mb-4">
+                        @Html.CheckBoxFor(m => m.IsPaid, new { @class = "form-check-input" })
+                        @Html.LabelFor(m => m.IsPaid, new { @class = "form-check-label fw-semibold ms-2" })
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="fw-semibold">Preview</label><br />
+                        <img id="previewImg"
+                             src="~/Images/noImg.jpg"
+                             class="img-thumbnail shadow-sm rounded-3"
+                             style="width:120px;height:120px;object-fit:cover;" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="fw-semibold">Upload Image</label>
+                        <input type="file"
+                               name="ProfileFile"
+                               class="form-control modern-input"
+                               accept=".jpg,.jpeg,.png"
+                               onchange="readUrl(this)" />
+                        @Html.ValidationMessageFor(m => m.ProfileFile, "", new { @class = "text-danger small" })
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="card border-0 shadow-lg rounded-4 property-card">
+                <div class="card-body p-4">
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="text-success fw-bold">
+                            <i class="fa-solid fa-building me-2"></i> Properties
+                        </h5>
+
+                        <button type="button" class="btn btn-warning rounded-pill px-3" onclick="addProperty()">
+                            <i class="fa-solid fa-plus"></i> Add
+                        </button>
+                    </div>
+
+                    <table id="ExTable" class="table table-bordered align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Type</th>
+                                <th>Location</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0; i < Model.Properties.Count; i++)
+                                {
+                                    <tr>
+                                        <td>
+                                            <input type="hidden" name="Properties[@i].PropertyId" value="0" />
+                                            <input type="text" name="Properties[@i].PropertyType" class="form-control modern-input" />
+                                            <span class="text-danger small" data-valmsg-for="Properties[@i].PropertyType"></span>
+                                        </td>
+                                        <td>
+                                            <input type="text" name="Properties[@i].Location" class="form-control modern-input" />
+                                            <span class="text-danger small" data-valmsg-for="Properties[@i].Location"></span>
+                                        </td>
+                                        <td>
+                                            <button type="button" class="btn btn-danger btn-sm rounded-pill" onclick="deleteRow(this)">
+                                                <i class="fa-solid fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+
+                        <input type="hidden" id="HIndex" value="@Model.Properties.Count" />
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="modal-footer mt-4">
+            <button type="button" class="btn btn-secondary rounded-pill px-4 btn-close-modal">Close</button>
+            <button type="submit" class="btn btn-success rounded-pill px-4">
+                <i class="fa-solid fa-check me-2"></i> Create
+            </button>
+        </div>
+    }
+</div>
+
+<style>
+    .modern-input, .modern-select {
+        border-radius: 12px;
+        transition: .3s;
+    }
+
+        .modern-input:focus, .modern-select:focus {
+            border-color: #0d6efd;
+            box-shadow: 0 0 10px rgba(13,110,253,.25);
+        }
+
+    .sale-card:hover, .property-card:hover {
+        transform: translateY(-4px);
+        transition: .3s;
+    }
+</style>
+
+<script>
+    function readUrl(input){
+        if(input.files && input.files[0]){
+            var reader=new FileReader();
+            reader.onload=function(e){
+                $("#previewImg").attr("src",e.target.result);
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function deleteRow(btn){
+        $(btn).closest("tr").remove();
+        updateIndex();
+    }
+
+    function updateIndex(){
+        $("#ExTable tbody tr").each(function(index,row){
+            $(row).find("input,span[data-valmsg-for]").each(function(){
+                var name=$(this).attr("name");
+                var valmsg=$(this).attr("data-valmsg-for");
+
+                if(name){
+                    $(this).attr("name",name.replace(/Properties\[\d+\]/,"Properties["+index+"]"));
+                }
+
+                if(valmsg){
+                    $(this).attr("data-valmsg-for",valmsg.replace(/Properties\[\d+\]/,"Properties["+index+"]"));
+                }
+            });
+        });
+    }
+
+    function addProperty(){
+        var index=$("#ExTable tbody tr").length;
+
+        var row=`
+        <tr>
+            <td>
+                <input type="hidden" name="Properties[${index}].PropertyId" value="0"/>
+                <input type="text" name="Properties[${index}].PropertyType" class="form-control modern-input"/>
+                <span class="text-danger small" data-valmsg-for="Properties[${index}].PropertyType"></span>
+            </td>
+            <td>
+                <input type="text" name="Properties[${index}].Location" class="form-control modern-input"/>
+                <span class="text-danger small" data-valmsg-for="Properties[${index}].Location"></span>
+            </td>
+            <td>
+                <button type="button" class="btn btn-danger btn-sm rounded-pill" onclick="deleteRow(this)">
+                    <i class="fa-solid fa-trash"></i>
+                </button>
+            </td>
+        </tr>`;
+
+        $("#ExTable tbody").append(row);
+    }
+</script>

@@ -1,0 +1,171 @@
+@model SalesCoreProjectWithIdentityViewCom.Models.ViewModels.SalesSummaryViewModel
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+<div class="row g-4 mb-4 sales-summary-grid">
+
+    <div class="col-sm-6 col-xl-3">
+        <div class="summary-card gradient-blue">
+            <div class="summary-icon">
+                <i class="fa-solid fa-cart-shopping"></i>
+            </div>
+            <span>Total Sales</span>
+            <h3>@Model.TotalSales</h3>
+            <small>All records inside the system</small>
+        </div>
+    </div>
+
+    <div class="col-sm-6 col-xl-3">
+        <div class="summary-card gradient-green">
+            <div class="summary-icon">
+                <i class="fa-solid fa-dollar-sign"></i>
+            </div>
+            <span>Total Revenue</span>
+            <h3>@Model.TotalRevenue</h3>
+            <small>Combined sales value</small>
+        </div>
+    </div>
+
+    <div class="col-sm-6 col-xl-3">
+        <div class="summary-card gradient-purple">
+            <div class="summary-icon">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <span>Paid Sales</span>
+            <h3>@Model.PaidSales</h3>
+            <small>Completed payment records</small>
+        </div>
+    </div>
+
+    <div class="col-sm-6 col-xl-3">
+        <div class="summary-card gradient-red">
+            <div class="summary-icon">
+                <i class="fa-solid fa-clock"></i>
+            </div>
+            <span>Unpaid Sales</span>
+            <h3>@Model.UnpaidSales</h3>
+            <small>Pending payment follow-up</small>
+        </div>
+    </div>
+
+    <div class="col-sm-6 col-xl-4">
+        <div class="summary-card gradient-orange">
+            <div class="summary-icon">
+                <i class="fa-solid fa-wallet"></i>
+            </div>
+            <span>Paid Revenue</span>
+            <h3>@Model.PaidRevenue</h3>
+            <small>Total received payment amount</small>
+        </div>
+    </div>
+
+    <div class="col-sm-6 col-xl-4">
+        <div class="summary-card gradient-cyan">
+            <div class="summary-icon">
+                <i class="fa-solid fa-building"></i>
+            </div>
+            <span>Total Properties</span>
+            <h3>@Model.TotalProperties</h3>
+            <small>Linked property records</small>
+        </div>
+    </div>
+
+    <div class="col-sm-6 col-xl-4">
+        <div class="summary-card gradient-dark">
+            <div class="summary-icon">
+                <i class="fa-solid fa-chart-line"></i>
+            </div>
+            <span>Average Sale</span>
+            <h3>@Model.AverageSaleAmount</h3>
+            <small>Average value per sale</small>
+        </div>
+    </div>
+
+</div>
+
+<style>
+    .summary-card {
+        position: relative;
+        border-radius: 22px;
+        padding: 24px;
+        color: white;
+        overflow: hidden;
+        box-shadow: 0 12px 30px rgba(0,0,0,.12);
+        transition: all .35s ease;
+        min-height: 170px;
+    }
+
+        .summary-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 18px 38px rgba(0,0,0,.18);
+        }
+
+        .summary-card span {
+            font-size: 14px;
+            font-weight: 600;
+            opacity: .9;
+            display: block;
+        }
+
+        .summary-card h3 {
+            font-size: 30px;
+            font-weight: 800;
+            margin: 12px 0 8px;
+        }
+
+        .summary-card small {
+            font-size: 13px;
+            opacity: .88;
+        }
+
+    .summary-icon {
+        position: absolute;
+        top: 18px;
+        right: 18px;
+        font-size: 28px;
+        opacity: .25;
+    }
+
+    .gradient-blue {
+        background: linear-gradient(135deg,#4facfe,#00f2fe);
+    }
+
+    .gradient-green {
+        background: linear-gradient(135deg,#43e97b,#38f9d7);
+    }
+
+    .gradient-purple {
+        background: linear-gradient(135deg,#667eea,#764ba2);
+    }
+
+    .gradient-red {
+        background: linear-gradient(135deg,#ff5858,#f857a6);
+    }
+
+    .gradient-orange {
+        background: linear-gradient(135deg,#f7971e,#ffd200);
+    }
+
+    .gradient-cyan {
+        background: linear-gradient(135deg,#36d1dc,#5b86e5);
+    }
+
+    .gradient-dark {
+        background: linear-gradient(135deg,#232526,#414345);
+    }
+
+    @@media (max-width: 768px) {
+        .summary-card {
+            min-height: 145px;
+            padding: 20px;
+        }
+
+            .summary-card h3 {
+                font-size: 24px;
+            }
+
+        .summary-icon {
+            font-size: 24px;
+        }
+    }
+</style>

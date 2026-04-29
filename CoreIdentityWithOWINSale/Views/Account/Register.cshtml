@@ -1,0 +1,333 @@
+@model SalesCoreProjectWithIdentityViewCom.Models.ViewModels.RegisterViewModel
+
+@{
+    ViewData["Title"] = "Register";
+}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+<div class="auth-shell">
+    <div class="auth-card auth-card--wide premium-auth-card">
+        <div class="auth-aside d-flex auth-aside-upgraded">
+            <div class="auth-aside-overlay"></div>
+
+            <div class="position-relative z-1">
+                <span class="section-chip mb-3">Create your account</span>
+                <h1 class="display-6 fw-bold mb-3">
+                    <i class="fa-solid fa-user-plus me-2"></i>
+                    Join a modern ASP.NET Core workspace.
+                </h1>
+                <p class="text-white-50 mb-4">
+                    Register once and start using a responsive dashboard, secure navigation, role-aware features, and a professional sales management interface.
+                </p>
+
+                <div class="hero-metrics auth-metrics">
+                    <div class="auth-metric-box">
+                        <strong><i class="fa-solid fa-gauge-high me-2"></i>Dashboard ready</strong>
+                        <span>Start from a strong and clean homepage</span>
+                    </div>
+                    <div class="auth-metric-box">
+                        <strong><i class="fa-solid fa-user-shield me-2"></i>Identity roles</strong>
+                        <span>Authorization structure already integrated</span>
+                    </div>
+                    <div class="auth-metric-box">
+                        <strong><i class="fa-solid fa-mobile-screen-button me-2"></i>Responsive UI</strong>
+                        <span>Designed for desktop, tablet, and mobile</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="auth-form-wrap auth-form-upgraded">
+            <span class="section-chip mb-3">Get started</span>
+            <h2 class="fw-bold mb-2">
+                <i class="fa-solid fa-address-card me-2 text-primary"></i>Register
+            </h2>
+            <p class="text-muted mb-4">Create your account to enter the system.</p>
+
+            <form asp-action="Register" method="post" novalidate>
+                @Html.AntiForgeryToken()
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                <div class="mb-3">
+                    <label asp-for="Email" class="form-label fw-semibold">
+                        <i class="fa-solid fa-envelope me-2 text-primary"></i>Email
+                    </label>
+                    <div class="input-icon-wrap">
+                        <span class="input-icon"><i class="fa-solid fa-at"></i></span>
+                        <input asp-for="Email" class="form-control modern-auth-input ps-5 live-input" placeholder="you@example.com" autocomplete="email" />
+                    </div>
+                    <span asp-validation-for="Email" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Password" class="form-label fw-semibold">
+                        <i class="fa-solid fa-key me-2 text-primary"></i>Password
+                    </label>
+                    <div class="input-icon-wrap password-wrap">
+                        <span class="input-icon"><i class="fa-solid fa-lock"></i></span>
+                        <input asp-for="Password" class="form-control modern-auth-input ps-5 pe-5 live-input" placeholder="Create password" id="registerPasswordInput" autocomplete="new-password" />
+                        <button type="button" class="password-toggle" id="toggleRegisterPassword">
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
+                    </div>
+                    <span asp-validation-for="Password" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="ConfirmPassword" class="form-label fw-semibold">
+                        <i class="fa-solid fa-check-double me-2 text-primary"></i>Confirm Password
+                    </label>
+                    <div class="input-icon-wrap password-wrap">
+                        <span class="input-icon"><i class="fa-solid fa-lock"></i></span>
+                        <input asp-for="ConfirmPassword" class="form-control modern-auth-input ps-5 pe-5 live-input" placeholder="Confirm password" id="confirmPasswordInput" autocomplete="new-password" />
+                        <button type="button" class="password-toggle" id="toggleConfirmPassword">
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
+                    </div>
+                    <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100 py-3 mb-3 rounded-pill shadow-sm auth-submit-btn" id="registerBtn">
+                    <i class="fa-solid fa-user-check me-2"></i>Create Account
+                </button>
+
+                <p class="text-muted mb-0 text-center">
+                    Already have an account?
+                    <a asp-controller="Account" asp-action="Login" class="fw-semibold text-decoration-none">Login</a>
+                </p>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .auth-shell {
+        min-height: calc(100vh - 170px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 32px 14px;
+        position: relative;
+        overflow: hidden;
+        background: radial-gradient(circle at 10% 20%, rgba(13,110,253,.14), transparent 28%), radial-gradient(circle at 90% 80%, rgba(111,66,193,.14), transparent 30%), linear-gradient(135deg, #f8fbff, #eef5ff);
+    }
+
+        .auth-shell::before,
+        .auth-shell::after {
+            content: "";
+            position: absolute;
+            border-radius: 999px;
+            opacity: .85;
+            animation: floatBlob 7s ease-in-out infinite;
+        }
+
+        .auth-shell::before {
+            width: 230px;
+            height: 230px;
+            left: -70px;
+            top: 30px;
+            background: linear-gradient(135deg, rgba(13,110,253,.22), rgba(13,202,240,.18));
+        }
+
+        .auth-shell::after {
+            width: 280px;
+            height: 280px;
+            right: -90px;
+            bottom: -70px;
+            background: linear-gradient(135deg, rgba(111,66,193,.22), rgba(236,72,153,.16));
+            animation-delay: 1.4s;
+        }
+
+    @@keyframes floatBlob {
+        0%, 100% {
+            transform: translateY(0);
+        }
+
+        50% {
+            transform: translateY(-18px);
+        }
+    }
+
+    .premium-auth-card {
+        width: min(1140px, 100%);
+        display: grid;
+        grid-template-columns: 1.05fr .95fr;
+        border-radius: 32px;
+        background: rgba(255,255,255,.72);
+        border: 1px solid rgba(255,255,255,.72);
+        box-shadow: 0 30px 80px rgba(15,23,42,.16);
+        backdrop-filter: blur(18px);
+        overflow: hidden;
+    }
+
+    .auth-aside-upgraded {
+        padding: 54px;
+        position: relative;
+        background: linear-gradient(135deg, rgba(13,110,253,.94), rgba(111,66,193,.92), rgba(6,182,212,.82));
+    }
+
+    .auth-aside-overlay {
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at 15% 20%, rgba(255,255,255,.20), transparent 26%);
+    }
+
+    .auth-metric-box {
+        background: rgba(255,255,255,.12);
+        border: 1px solid rgba(255,255,255,.16);
+        border-radius: 20px;
+        padding: 16px 18px;
+        transition: .3s;
+    }
+
+        .auth-metric-box:hover {
+            transform: translateY(-4px);
+        }
+
+    .auth-form-upgraded {
+        padding: 54px;
+        background: linear-gradient(180deg, rgba(255,255,255,.92), rgba(248,251,255,.82));
+    }
+
+    .input-icon-wrap {
+        position: relative;
+    }
+
+    .input-icon {
+        position: absolute;
+        left: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #64748b;
+    }
+
+    .modern-auth-input {
+        border-radius: 18px;
+        min-height: 54px;
+        border: 1px solid #dbe5f0;
+        background: rgba(255,255,255,.86);
+        box-shadow: 0 10px 24px rgba(15,23,42,.04);
+    }
+
+        .modern-auth-input:focus {
+            border-color: #86b7fe;
+            box-shadow: 0 0 0 .22rem rgba(13,110,253,.13);
+        }
+
+    .live-input.valid {
+        border-color: #198754;
+        box-shadow: 0 0 0 .15rem rgba(25,135,84,.14);
+    }
+
+    .live-input.invalid {
+        border-color: #dc3545;
+        box-shadow: 0 0 0 .15rem rgba(220,53,69,.13);
+    }
+
+    .password-toggle {
+        position: absolute;
+        right: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        border: none;
+        background: transparent;
+        color: #64748b;
+    }
+
+        .password-toggle:hover {
+            color: #0d6efd;
+        }
+
+    .auth-submit-btn {
+        background: linear-gradient(135deg, #0d6efd, #6f42c1);
+        border: 0;
+        font-weight: 700;
+        transition: .3s;
+    }
+
+        .auth-submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 16px 34px rgba(13,110,253,.26) !important;
+        }
+
+    @@media (max-width: 991.98px) {
+        .premium-auth-card {
+            grid-template-columns: 1fr;
+            border-radius: 24px;
+        }
+
+        .auth-aside-upgraded,
+        .auth-form-upgraded {
+            padding: 34px;
+        }
+    }
+
+    @@media (max-width: 767.98px) {
+        .premium-auth-card {
+            border-radius: 20px;
+        }
+
+        .auth-aside-upgraded,
+        .auth-form-upgraded {
+            padding: 24px 18px;
+        }
+
+        .modern-auth-input {
+            min-height: 50px;
+        }
+    }
+</style>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        function wirePasswordToggle(buttonId, inputId) {
+            const button = document.getElementById(buttonId);
+            const input = document.getElementById(inputId);
+
+            if (button && input) {
+                button.addEventListener("click", function () {
+                    const isPassword = input.getAttribute("type") === "password";
+                    input.setAttribute("type", isPassword ? "text" : "password");
+
+                    const icon = this.querySelector("i");
+                    if (icon) {
+                        icon.classList.toggle("fa-eye");
+                        icon.classList.toggle("fa-eye-slash");
+                    }
+                });
+            }
+        }
+
+        wirePasswordToggle("toggleRegisterPassword", "registerPasswordInput");
+        wirePasswordToggle("toggleConfirmPassword", "confirmPasswordInput");
+
+        document.querySelectorAll(".live-input").forEach(function (input) {
+            input.addEventListener("input", function () {
+                if (this.value.trim().length > 2) {
+                    this.classList.add("valid");
+                    this.classList.remove("invalid");
+                } else if (this.value.trim().length > 0) {
+                    this.classList.add("invalid");
+                    this.classList.remove("valid");
+                } else {
+                    this.classList.remove("valid", "invalid");
+                }
+            });
+        });
+
+        const form = document.querySelector("form");
+        const btn = document.getElementById("registerBtn");
+
+        if (form && btn) {
+            form.addEventListener("submit", function () {
+                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i>Creating...';
+                btn.disabled = true;
+            });
+        }
+    });
+</script>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
